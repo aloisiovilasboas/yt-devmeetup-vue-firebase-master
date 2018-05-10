@@ -25,7 +25,7 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 - team1_id
 - team2_id
 - team1_score1
-- team1_score1
+- team2_score2
 - group
 - user_id
 
