@@ -26,12 +26,12 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 - team2_id
 - team1_score1
 - team2_score2
-- group
 - user_id
 
 # Team
 - team_id
 - name
+- group
 
 # User
 - user_id

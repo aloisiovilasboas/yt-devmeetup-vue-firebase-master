@@ -24,6 +24,18 @@ export const store = new Vuex.Store({
         description: 'It\'s Paris!'
       }
     ],
+    loadedTimes: [
+      {
+        nome: 'Arabia',
+        grupo: 'A',
+        imgurl: 'https://firebasestorage.googleapis.com/v0/b/yt-dev-meetup-6a846.appspot.com/o/flags%2Farabia.png?alt=media&token=bd495d4a-575f-4ea2-b5e5-f115350aed02'
+      },
+      {
+        nome: 'Russia',
+        grupo: 'A',
+        imgurl: 'https://firebasestorage.googleapis.com/v0/b/yt-dev-meetup-6a846.appspot.com/o/flags%2Frussia.png?alt=media&token=fac5c120-2ad1-4b5f-ac74-189d02581254'
+      }
+    ],
     user: null,
     loading: false,
     error: null
@@ -32,8 +44,14 @@ export const store = new Vuex.Store({
     setLoadedMeetups (state, payload) {
       state.loadedMeetups = payload
     },
+    setLoadedTimes (state, payload) {
+      state.loadedTimes = payload
+    },
     createMeetup (state, payload) {
       state.loadedMeetups.push(payload)
+    },
+    createGrupo (state, payload) {
+      state.grupoData = payload
     },
     setUser (state, payload) {
       state.user = payload
@@ -75,6 +93,30 @@ export const store = new Vuex.Store({
           }
         )
     },
+    loadTimes ({commit}) {
+      commit('setLoading', true)
+      firebase.database().ref('times').once('value')
+        .then((data) => {
+          const times = []
+          const obj = data.val()
+          for (let key in obj) {
+            times.push({
+              id: key,
+              nome: obj[key].nome,
+              grupo: obj[key].grupo,
+              imgurl: obj[key].imgurl
+            })
+          }
+          commit('setLoadedTimes', times)
+          commit('setLoading', false)
+        })
+        .catch(
+          (error) => {
+            console.log(error)
+            commit('setLoading', false)
+          }
+        )
+    },
     createMeetup ({commit, getters}, payload) {
       const meetup = {
         title: payload.title,
@@ -96,6 +138,76 @@ export const store = new Vuex.Store({
           console.log(error)
         })
       // Reach out to firebase and store it
+    },
+    createGrupo ({commit, getters}, payload) {
+      const time1data = {
+        nome: payload.time1,
+        imgurl: payload.time1url,
+        grupo: payload.grupo
+      }
+      const time2data = {
+        nome: payload.time2,
+        imgurl: payload.time2url,
+        grupo: payload.grupo
+      }
+      const time3data = {
+        nome: payload.time3,
+        imgurl: payload.time3url,
+        grupo: payload.grupo
+      }
+      const time4data = {
+        nome: payload.time4,
+        imgurl: payload.time4url,
+        grupo: payload.grupo
+      }
+      firebase.database().ref('times').push(time1data)
+        .then((data) => {
+          const key = data.key
+          console.log(data)
+          commit('createGrupo', {
+            ...time1data,
+            id: key
+          })
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+      firebase.database().ref('times').push(time2data)
+        .then((data) => {
+          const key = data.key
+          console.log(data)
+          commit('createGrupo', {
+            ...time2data,
+            id: key
+          })
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+      firebase.database().ref('times').push(time3data)
+          .then((data) => {
+            const key = data.key
+            console.log(data)
+            commit('createGrupo', {
+              ...time3data,
+              id: key
+            })
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      firebase.database().ref('times').push(time4data)
+            .then((data) => {
+              const key = data.key
+              console.log(data)
+              commit('createGrupo', {
+                ...time4data,
+                id: key
+              })
+            })
+            .catch((error) => {
+              console.log(error)
+            })
     },
     signUserUp ({commit}, payload) {
       commit('setLoading', true)
@@ -157,6 +269,9 @@ export const store = new Vuex.Store({
       return state.loadedMeetups.sort((meetupA, meetupB) => {
         return meetupA.date > meetupB.date
       })
+    },
+    loadedTimes (state) {
+      return state.loadedTimes
     },
     featuredMeetups (state, getters) {
       return getters.loadedMeetups.slice(0, 5)

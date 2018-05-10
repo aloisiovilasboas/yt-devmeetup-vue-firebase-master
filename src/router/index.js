@@ -10,6 +10,7 @@ import Admin from '@/components/User/Admin'
 import Signup from '@/components/User/Signup'
 import Signin from '@/components/User/Signin'
 import Meetup from '@/components/Meetup/Meetup'
+import CreateGrupo from '@/components/Admin/CreateGrupo'
 import AuthGuard from './auth-guard'
 
 Vue.use(Router)
@@ -54,6 +55,12 @@ export default new Router({
       path: '/admin',
       name: 'Admin',
       component: Admin,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/CreateGrupo',
+      name: 'CreateGrupo',
+      component: CreateGrupo,
       beforeEnter: AuthGuard
     },
     {
