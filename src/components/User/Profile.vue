@@ -22,21 +22,23 @@
       
         <!-- <h1 v-for="partida in grupo.partidas" :key="partida.id" >{{partida.time1nome}}</h1>-->
 
-        <v-layout row align-items align-center v-for="partida in grupo.partidas" :key="partida.id">
+        <v-layout row align-items align-center  v-for="partida in grupo.partidas" :key="partida.id">
           <v-flex xs4 >
               <div class="text-xs-right"> {{partida.time1nome}}</div>
           </v-flex>
-          <v-flex xs1 >
+          <v-flex xs2 >
             <v-text-field
+                    solo
                     name="input-1-3"
                     single-line
                 ></v-text-field>
             </v-flex>
-            <v-flex xs1>
+            <v-flex xs2>
               <div class="text-xs-center">x</div>
             </v-flex>
-            <v-flex xs1>
+            <v-flex xs2>
               <v-text-field
+              solo
               name="input-1-2"
               single-line
               ></v-text-field>
