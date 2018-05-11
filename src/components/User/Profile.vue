@@ -22,11 +22,16 @@
       
         <!-- <h1 v-for="partida in grupo.partidas" :key="partida.id" >{{partida.time1nome}}</h1>-->
 
-        <v-layout row align-items align-center  v-for="partida in grupo.partidas" :key="partida.id">
-          <v-flex xs4 >
-              <div class="text-xs-right"> {{partida.time1nome}}</div>
+        <v-layout row align-items justify-center  v-for="partida in grupo.partidas" :key="partida.id">
+          <v-flex xs1 align-content-end>
+            <v-layout row align-items align-center>
+              <v-avatar tile= "false">
+                <img :src="partida.time1.imgurl">
+              </v-avatar>
+              <div class="text-xs-right"> {{partida.time1.sigla}}</div>
+            </v-layout>
           </v-flex>
-          <v-flex xs2 >
+          <v-flex xs1 >
             <v-text-field
                     solo
                     name="input-1-3"
@@ -36,15 +41,20 @@
             <v-flex xs2>
               <div class="text-xs-center">x</div>
             </v-flex>
-            <v-flex xs2>
+            <v-flex xs1>
               <v-text-field
               solo
               name="input-1-2"
               single-line
               ></v-text-field>
             </v-flex>
-            <v-flex xs4>
-              <div class="text-xs-left">{{partida.time2nome}}</div>
+            <v-flex xs1 align-content-end>
+            <v-layout row align-items align-center>
+              <div class="text-xs-right"> {{partida.time2.sigla}}</div>
+              <v-avatar tile= "false">
+                <img :src="partida.time2.imgurl">
+              </v-avatar>
+            </v-layout>
           </v-flex>
            
          </v-layout>
@@ -96,16 +106,43 @@
       }
     },
     computed: {
-      times () {
-        return this.$store.getters.loadedTimes
-      },
-      partidas () {
-        return this.$store.getters.loadedPartidas
-      },
       grupos () {
-        console.log(this.partidas)
-        return [
-          {l: 'A',
+        var times = this.$store.getters.loadedTimes
+        function removerAcentos (s) {
+          return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        }
+        times.forEach(time => {
+          var sigla = removerAcentos(time.nome.slice(0, 3).toUpperCase())
+          console.log(sigla)
+          time.sigla = sigla
+        })
+        var partidas = this.$store.getters.loadedPartidas
+        var letras = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' ]
+        var gruposOrganizados = []
+        letras.forEach(letra => {
+          var partidasGrupo = partidas.filter(partida => partida.grupo === letra)
+          var timesGrupo = times.filter(time => time.grupo === letra)
+          partidasGrupo.forEach(partida => {
+            var time1 = null
+            var time2 = null
+            timesGrupo.forEach(time => {
+              if (partida.time1id === time.id) {
+                time1 = time
+              } else if (partida.time2id === time.id) {
+                time2 = time
+              }
+            })
+            partida.time1 = time1
+            partida.time2 = time2
+          })
+          gruposOrganizados.push({l: letra,
+            times: timesGrupo,
+            partidas: partidasGrupo
+          })
+        })
+        console.log(gruposOrganizados)
+        return gruposOrganizados
+        /*  {l: 'A',
             times: this.times.filter(time => time.grupo === 'A'),
             partidas: this.partidas.filter(partida => partida.grupo === 'A')
           },
@@ -137,7 +174,7 @@
             times: this.times.filter(time => time.grupo === 'H'),
             partidas: this.partidas.filter(partida => partida.grupo === 'H')
           }
-        ]
+        ] */
       }
     }
   }

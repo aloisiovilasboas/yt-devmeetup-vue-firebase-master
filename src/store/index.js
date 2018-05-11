@@ -132,9 +132,7 @@ export const store = new Vuex.Store({
               id: key,
               grupo: obj[key].grupo,
               time1id: obj[key].time1id,
-              time2id: obj[key].time2id,
-              time1nome: obj[key].time1nome,
-              time2nome: obj[key].time2nome
+              time2id: obj[key].time2id
             })
           }
           commit('setLoadedPartidas', partidas)

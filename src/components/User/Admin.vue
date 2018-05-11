@@ -4,16 +4,33 @@
                     <v-icon left light>arrow_forward</v-icon>
                     Add Grupo
                   </v-btn>
+                  <v-btn  v-on:click="geraSiglas">
+                    <v-icon left light>arrow_forward</v-icon>
+                    Gera Siglas
+                  </v-btn>
     <v-btn  v-on:click="geraPartidas">
                     <v-icon left light>arrow_forward</v-icon>
                     Gera Partidas
                   </v-btn>
+                  
   </div>
+  
 </template>
 
 <script>
   export default {
     methods: {
+      geraSiglas () {
+        function removerAcentos (s) {
+          return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        }
+        var times = this.$store.getters.loadedTimes
+        times.forEach(time => {
+          var sigla = removerAcentos(time.nome.slice(0, 3).toUpperCase())
+          console.log(sigla)
+          time.sigla = sigla
+        })
+      },
       geraPartidas () {
         var times = this.$store.getters.loadedTimes
         var grupos = [
@@ -28,12 +45,12 @@
         ]
         var todasAsPartidas = []
         grupos.forEach(grupo => {
-          todasAsPartidas.push({grupo: grupo.l, time1nome: grupo.times[2].nome, time1id: grupo.times[2].id, time2id: grupo.times[3].id, time2nome: grupo.times[3].nome})
-          todasAsPartidas.push({grupo: grupo.l, time1nome: grupo.times[0].nome, time1id: grupo.times[0].id, time2id: grupo.times[1].id, time2nome: grupo.times[1].nome})
-          todasAsPartidas.push({grupo: grupo.l, time1nome: grupo.times[0].nome, time1id: grupo.times[0].id, time2id: grupo.times[2].id, time2nome: grupo.times[2].nome})
-          todasAsPartidas.push({grupo: grupo.l, time1nome: grupo.times[1].nome, time1id: grupo.times[1].id, time2id: grupo.times[3].id, time2nome: grupo.times[3].nome})
-          todasAsPartidas.push({grupo: grupo.l, time1nome: grupo.times[0].nome, time1id: grupo.times[0].id, time2id: grupo.times[3].id, time2nome: grupo.times[3].nome})
-          todasAsPartidas.push({grupo: grupo.l, time1nome: grupo.times[1].nome, time1id: grupo.times[1].id, time2id: grupo.times[2].id, time2nome: grupo.times[2].nome})
+          todasAsPartidas.push({grupo: grupo.l, time1id: grupo.times[2].id, time2id: grupo.times[3].id})
+          todasAsPartidas.push({grupo: grupo.l, time1id: grupo.times[0].id, time2id: grupo.times[1].id})
+          todasAsPartidas.push({grupo: grupo.l, time1id: grupo.times[0].id, time2id: grupo.times[2].id})
+          todasAsPartidas.push({grupo: grupo.l, time1id: grupo.times[1].id, time2id: grupo.times[3].id})
+          todasAsPartidas.push({grupo: grupo.l, time1id: grupo.times[0].id, time2id: grupo.times[3].id})
+          todasAsPartidas.push({grupo: grupo.l, time1id: grupo.times[1].id, time2id: grupo.times[2].id})
         })
         console.log(todasAsPartidas)
         this.$store.dispatch('createPartidas', todasAsPartidas)
