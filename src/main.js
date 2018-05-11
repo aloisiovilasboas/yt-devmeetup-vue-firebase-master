@@ -34,5 +34,6 @@ new Vue({
     })
     this.$store.dispatch('loadMeetups')
     this.$store.dispatch('loadTimes')
+    this.$store.dispatch('loadPartidas')
   }
 })

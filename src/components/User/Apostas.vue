@@ -210,7 +210,7 @@
     }),
     computed: {
       times () {
-        return this.$store.getters.loadedTimes
+        return this.$store.getters.loadedTimes.filter(time => time.grupo === 'A')
       }
     }
   }

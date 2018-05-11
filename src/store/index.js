@@ -36,6 +36,7 @@ export const store = new Vuex.Store({
         imgurl: 'https://firebasestorage.googleapis.com/v0/b/yt-dev-meetup-6a846.appspot.com/o/flags%2Frussia.png?alt=media&token=fac5c120-2ad1-4b5f-ac74-189d02581254'
       }
     ],
+    loadedPartidas: [],
     user: null,
     loading: false,
     error: null
@@ -47,11 +48,14 @@ export const store = new Vuex.Store({
     setLoadedTimes (state, payload) {
       state.loadedTimes = payload
     },
+    setLoadedPartidas (state, payload) {
+      state.loadedPartidas = payload
+    },
     createMeetup (state, payload) {
       state.loadedMeetups.push(payload)
     },
     createGrupo (state, payload) {
-      state.grupoData = payload
+      state.loadedTimes.push(payload)
     },
     setUser (state, payload) {
       state.user = payload
@@ -117,6 +121,32 @@ export const store = new Vuex.Store({
           }
         )
     },
+    loadPartidas ({commit}) {
+      commit('setLoading', true)
+      firebase.database().ref('partidas').once('value')
+        .then((data) => {
+          const partidas = []
+          const obj = data.val()
+          for (let key in obj) {
+            partidas.push({
+              id: key,
+              grupo: obj[key].grupo,
+              time1id: obj[key].time1id,
+              time2id: obj[key].time2id,
+              time1nome: obj[key].time1nome,
+              time2nome: obj[key].time2nome
+            })
+          }
+          commit('setLoadedPartidas', partidas)
+          commit('setLoading', false)
+        })
+        .catch(
+          (error) => {
+            console.log(error)
+            commit('setLoading', false)
+          }
+        )
+    },
     createMeetup ({commit, getters}, payload) {
       const meetup = {
         title: payload.title,
@@ -137,6 +167,23 @@ export const store = new Vuex.Store({
         .catch((error) => {
           console.log(error)
         })
+      // Reach out to firebase and store it
+    },
+    createPartidas ({commit, getters}, payload) {
+      const todasAsPartidas = payload
+      todasAsPartidas.forEach(partida => {
+        firebase.database().ref('partidas').push(partida)
+        .then((data) => {
+          const key = data.key
+          commit('createPartidas', {
+            ...partida,
+            id: key
+          })
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+      })
       // Reach out to firebase and store it
     },
     createGrupo ({commit, getters}, payload) {
@@ -272,6 +319,9 @@ export const store = new Vuex.Store({
     },
     loadedTimes (state) {
       return state.loadedTimes
+    },
+    loadedPartidas (state) {
+      return state.loadedPartidas
     },
     featuredMeetups (state, getters) {
       return getters.loadedMeetups.slice(0, 5)

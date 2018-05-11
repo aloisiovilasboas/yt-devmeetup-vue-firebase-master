@@ -113,7 +113,7 @@
           time4url: this.time4url
         }
         this.$store.dispatch('createGrupo', grupoData)
-        this.$router.push('/meetups')
+        this.$router.push('/profile')
       }
     }
   }
