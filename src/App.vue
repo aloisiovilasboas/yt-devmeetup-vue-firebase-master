@@ -59,7 +59,7 @@
         
     </v-content>
     <v-footer color="indigo" app>
-      <span class="white--text">&copy; 2017</span>
+      <span  class="white--text" >&copy; Bolão do AFC 2018</span>
     </v-footer>
   </v-app>
 </template>
@@ -87,8 +87,7 @@
             {icon: 'supervisor_account', title: 'Admin', link: '/admin'},
             {icon: 'room', title: 'Organize Meetup', link: '/meetup/new'},
             {icon: 'person', title: 'Profile', link: '/profile'},
-            {icon: 'casino', title: 'Apostas', link: '/apostas'},
-            {icon: 'casino', title: 'Grupo 122', link: '/grupo1'}
+            {icon: 'casino', title: 'Apostas', link: '/apostas'}
           ]
         }
         return menuItems
