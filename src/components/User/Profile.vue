@@ -38,7 +38,7 @@
                     single-line
                 ></v-text-field>
             </v-flex>
-            <v-flex xs2>
+            <v-flex xs1>
               <div class="text-xs-center">x</div>
             </v-flex>
             <v-flex xs1>
