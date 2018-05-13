@@ -8,3 +8,36 @@ teste1 () {
         })
         return soma
       },
+
+      h1 {
+  font-size: 0%
+}
+
+
+'descending': true
+
+
+var grupo = this.grupos[indexG]
+        var time1 = grupo.partidas[indexP].time1
+        var time2 = grupo.partidas[indexP].time2
+        function calculaPontuacao (grupo,indexg,time) {
+          forEach
+        }
+        calculaPontuacao(time1)
+        time1.dados.p += 3
+        time2.dados.p += 3
+        this.ligacaop += 1
+
+
+
+        grupo.partidas.forEach(partida => {
+          if (time1.id === partida.time1id) {
+            gp+= partida.time
+          } else if (time1.id === partida.time2id) {
+            
+          }
+        })
+        time1.dados.p += 3
+        time2.dados.p += 3
+
+        :pagination.sync="pagination"
