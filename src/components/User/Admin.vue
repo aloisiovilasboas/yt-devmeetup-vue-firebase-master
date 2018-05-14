@@ -12,6 +12,10 @@
                     <v-icon left light>arrow_forward</v-icon>
                     Gera Partidas
                   </v-btn>
+                  <v-btn  :to="'/CreateDatas'">
+                    <v-icon left light>arrow_forward</v-icon>
+                    Add Datas
+                  </v-btn>
                   
   </div>
   

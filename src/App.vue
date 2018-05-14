@@ -28,7 +28,7 @@
     <v-toolbar color="indigo" dark fixed app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>
-        <router-link to="/" tag="span" style="cursor: pointer">DevMeetup</router-link>
+        <router-link to="/" tag="span" style="cursor: pointer">Bolão do AFC</router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-xs-only">
@@ -59,7 +59,7 @@
         
     </v-content>
     <v-footer color="indigo" app>
-      <span  class="white--text" >&copy; Bolão do AFC 2018</span>
+      <span  class="white--text" >&copy; 2018</span>
     </v-footer>
   </v-app>
 </template>

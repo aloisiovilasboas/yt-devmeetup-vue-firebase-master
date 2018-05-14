@@ -131,7 +131,7 @@
                       </v-flex>
                       <v-flex xs7 >
                         <v-radio
-                          :label="primeiroA.nome"
+                          :label="primeiroA"
                           color="orange darken-3"
                           :value="primeiroA"
                         ></v-radio>
