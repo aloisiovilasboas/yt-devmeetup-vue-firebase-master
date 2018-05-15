@@ -37,6 +37,7 @@ export const store = new Vuex.Store({
       }
     ],
     loadedPartidas: [],
+    loadedFases: [],
     user: null,
     loading: false,
     error: null
@@ -50,6 +51,9 @@ export const store = new Vuex.Store({
     },
     setLoadedPartidas (state, payload) {
       state.loadedPartidas = payload
+    },
+    setLoadedFases (state, payload) {
+      state.loadedFases = payload
     },
     createMeetup (state, payload) {
       state.loadedMeetups.push(payload)
@@ -132,10 +136,71 @@ export const store = new Vuex.Store({
               id: key,
               grupo: obj[key].grupo,
               time1id: obj[key].time1id,
-              time2id: obj[key].time2id
+              time2id: obj[key].time2id,
+              data: obj[key].data,
+              hora: obj[key].hora
             })
           }
+          partidas.sort(function (partidaA, partidaB) {
+            var mesA = Number(partidaA.data.substring(3))
+            var mesB = Number(partidaB.data.substring(3))
+            if (mesA - mesB !== 0) {
+              return mesA - mesB
+            } else {
+              var diaA = Number(partidaA.data.substring(0, 2))
+              var diaB = Number(partidaB.data.substring(0, 2))
+              if (diaA - diaB !== 0) {
+                return diaA - diaB
+              } else {
+                var horaA = Number(partidaA.hora.substring(0, 2))
+                var horaB = Number(partidaB.hora.substring(0, 2))
+                return horaA - horaB
+              }
+            }
+          })
           commit('setLoadedPartidas', partidas)
+          commit('setLoading', false)
+        })
+        .catch(
+          (error) => {
+            console.log(error)
+            commit('setLoading', false)
+          }
+        )
+    },
+    loadFases ({commit}) {
+      commit('setLoading', true)
+      firebase.database().ref('fases').once('value')
+        .then((data) => {
+          const fases = []
+          const obj = data.val()
+          for (let key in obj) {
+            fases.push({
+              id: key,
+              fase: obj[key].fase,
+              partidas: obj[key].partidas
+            })
+          }
+        /*   fases.forEach(fase => {
+            fase.partidas.sort(function (partidaA, partidaB) {
+              var mesA = Number(partidaA.data.substring(3))
+              var mesB = Number(partidaB.data.substring(3))
+              if (mesA - mesB !== 0) {
+                return mesA - mesB
+              } else {
+                var diaA = Number(partidaA.data.substring(0, 2))
+                var diaB = Number(partidaB.data.substring(0, 2))
+                if (diaA - diaB !== 0) {
+                  return diaA - diaB
+                } else {
+                  var horaA = Number(partidaA.hora.substring(0, 2))
+                  var horaB = Number(partidaB.hora.substring(0, 2))
+                  return horaA - horaB
+                }
+              }
+            })
+          }) */
+          commit('setLoadedFases', fases)
           commit('setLoading', false)
         })
         .catch(
@@ -175,6 +240,23 @@ export const store = new Vuex.Store({
           const key = data.key
           commit('createPartidas', {
             ...partida,
+            id: key
+          })
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+      })
+      // Reach out to firebase and store it
+    },
+    createPartidasSegundaFase ({commit, getters}, payload) {
+      const fases = payload
+      fases.forEach(fase => {
+        firebase.database().ref('fases').push(fase)
+        .then((data) => {
+          const key = data.key
+          commit('createPartidasSegundaFase', {
+            ...fase,
             id: key
           })
         })
@@ -320,6 +402,9 @@ export const store = new Vuex.Store({
     },
     loadedPartidas (state) {
       return state.loadedPartidas
+    },
+    loadedFases (state) {
+      return state.loadedFases
     },
     featuredMeetups (state, getters) {
       return getters.loadedMeetups.slice(0, 5)

@@ -2,23 +2,40 @@
   <v-container fluid grid-list-md text-xs-center>
 <v-tabs
     dark
-    color="cyan"
+    color="red darken-2"
     show-arrows
   >
-    <v-tabs-slider color="yellow"></v-tabs-slider>
+    <v-tabs-slider color="amber lighten-3"></v-tabs-slider>
     <v-tab
       v-for="grupo in grupos"
       :key="grupo.l"
       :href="'#grupo-' + grupo.l"
     >
+    <v-badge left overlap color="red" :value="false">
+      <span slot="badge">!</span>
       Grupo {{ grupo.l }}
+    </v-badge>
     </v-tab>
+    
     <v-tab
-      :key="oitavas"
-      :href="'#oitavas'"
+      v-for="fase in fases"
+      :key="fase.id"
+      :href="'#' + fase.id"
     >
-      Oitavas
+    <v-badge left overlap color="red" :value="false">
+      <span slot="badge">!</span>
+      {{ fase.fase }}
+    </v-badge>
     </v-tab>
+
+
+
+
+
+
+
+
+    
     <v-tabs-items>
       <v-tab-item
         v-for="(grupo, indexG) in grupos"
@@ -70,7 +87,7 @@
             </v-flex>         
           </v-layout>
           <v-layout fluid wrap row align-items justify-center >
-            <p class="hora">12/05/2018 - 14:00</p>
+            <p class="hora">{{partida.data +' - '+partida.hora}}</p>
           </v-layout>
          </v-layout> 
 
@@ -101,48 +118,59 @@
           </template>
         </v-data-table>
       </v-tab-item>
-      <v-tab-item :key="oitavas"
-        :id="'oitavas'">
-        <v-card flat>
-          <v-card-text>
-            <v-container fluid>
-              <v-layout row wrap>
-                <v-flex xs12 sm6 md6>
-                  <v-radio-group v-model="ex7" column>
+      <v-tab-item v-for="fase in fases" :key="fase.id"
+        :id="fase.id">
+        
+        <v-layout row wrap v-for="partida in fase.partidas" :key="partida.titulo">
+          <v-flex xs12 sm10 md8 offset-sm1 offset-md2>
+            <v-card class="margin" color="grey lighten-3">
+              <v-container fluid>
+                <v-layout row>
+                  <v-flex wrap sm 9>
+                  <v-radio-group :v-model="partida.titulo" column :disabled="partida.disabled">
                     <v-layout row wrap >
-                      <v-flex xs1 >
+                      <v-flex xs2 sm1 wrap >
                         <v-avatar class="avatarflex" :size="24" :tile="true">
-                          <img :src="primeiroA.imgurl">
+                          <img :src="partida.t1imgurl">
                         </v-avatar>
                       </v-flex>
                       <v-flex xs7 >
                         <v-radio
-                          :label="primeiroA.nome"
-                          color="orange darken-3"
-                          :value="primeiroA"
+                          :label="partida.time1GP"
+                          color="amber lighten-3"
+                          :value="partida.time1GP"
                         ></v-radio>
                       </v-flex>
                     </v-layout>
                     <v-layout row wrap >
-                      <v-flex xs1 >
+                      <v-flex xs2 sm1 >
                         <v-avatar class="avatarflex" :size="24" :tile="true">
-                          <img :src="primeiroA.imgurl">
+                          <img :src="partida.t2imgurl">
                         </v-avatar>
                       </v-flex>
                       <v-flex xs7 >
                         <v-radio
-                          :label="primeiroA.nome"
-                          color="orange darken-3"
-                          :value="primeiroA"
+                          :label="partida.time2GP"
+                          color="amber lighten-3"
+                          :value="partida.time2GP"
                         ></v-radio>
                       </v-flex>
                     </v-layout>
                   </v-radio-group>
-                </v-flex>
-              </v-layout>
-            </v-container>
-          </v-card-text>
-        </v-card>
+                  </v-flex>
+                  <v-flex align-center sm1 class ="subs">
+                    
+                        <div class="subs2">
+                            <h5 >{{ partida.titulo}}</h5>
+                          <div>{{ partida.data +' '+ partida.hora}}</div>
+                        </div>
+                      
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card>
+          </v-flex>
+        </v-layout>
       </v-tab-item>
     </v-tabs-items>
   </v-tabs>
@@ -155,8 +183,7 @@
       return {
         ex7: 'red',
         ex8: 'primary',
-        primeiroA: {nome: '1a'},
-        oitavas: null,
+        quartas: [],
         pagination: {'sortBy': 'pos', 'rowsPerPage': -1},
         ligacaop: 0,
         headers: [
@@ -178,7 +205,17 @@
         return this.$store.getters.loadedTimes
       },
       partidas () {
-        return this.$store.getters.loadedPartidas
+        var partidas = this.$store.getters.loadedPartidas
+        return partidas
+      },
+      fases () {
+        var fases = this.$store.getters.loadedFases
+        fases.forEach(fase => {
+          fase.partidas.forEach(partida => {
+            partida.disabled = true
+          })
+        })
+        return fases
       },
       grupos () {
         var times = this.times
@@ -243,7 +280,7 @@
         time.gc = 0
         time.sg = 0
         grupo.partidas.forEach(partida => {
-          if (partida.time1gols !== null && partida.time2gols !== null) {
+          if ((partida.time1gols !== '' && partida.time2gols !== '') && (partida.time1gols !== null && partida.time2gols !== null)) {
             if (time.id === partida.time1.id) {
               time.gp += Number(partida.time1gols)
               time.gc += Number(partida.time2gols)
@@ -290,9 +327,28 @@
         grupo.times.forEach(time => {
           time.pos = posicao
           posicao++
-          console.log(time.sigla)
+         // console.log(time.sigla)
         })
         this.primeiroA = grupo.times[0]
+      },
+      updateOitavas (grupo) {
+        var partidasOitavas = this.fases[0].partidas
+        var t1index = partidasOitavas.findIndex((p8) => {
+          return p8.gt1 === grupo.l
+        })
+        partidasOitavas[t1index].time1GP = grupo.times[0].nome
+        partidasOitavas[t1index].t1imgurl = grupo.times[0].imgurl
+        if (partidasOitavas[t1index].t2imgurl !== null) {
+          partidasOitavas[t1index].disabled = false
+        }
+        var t2index = partidasOitavas.findIndex((p8) => {
+          return p8.gt2 === grupo.l
+        })
+        partidasOitavas[t2index].time2GP = grupo.times[1].nome
+        partidasOitavas[t2index].t2imgurl = grupo.times[1].imgurl
+        if (partidasOitavas[t2index].t1imgurl !== null) {
+          partidasOitavas[t2index].disabled = false
+        }
       },
       update (numTime, indexG, indexP) {
        // console.log(numTime)
@@ -302,18 +358,29 @@
        // console.log(grupo)
         var partida = grupo.partidas[indexP]
         var time1 = partida.time1
-       // console.log(time1)
         var time2 = partida.time2
-       // console.log(time2)
-        var b1 = (numTime === 1 && (partida.time2gols !== null || partida.time1gols === null))
-        var b2 = (numTime === 2 && (partida.time1gols !== null || partida.time2gols === null))
+        var b1 = (true)
+        var b2 = (true)
         if (b1 || b2) {
           this.calculaPontuacao(time1, grupo)
           this.calculaPontuacao(time2, grupo)
           this.calculaPosicoes(grupo)
           this.pagination.sortBy = 'name'
           this.pagination.sortBy = 'pos'
+          // calcula completude
+          var completo = true
+          for (let i = 0; (i < grupo.times.length && completo); i++) {
+            const time = grupo.times[i]
+            if (time.v + time.e + time.d !== 3) {
+              completo = false
+            }
+          }
+          if (completo) {
+            console.log('Completo!!!!!!')
+            this.updateOitavas(grupo)
+          }
           this.ligacaop += 1
+          console.log('ligacaop: ' + this.ligacaop)
         }
       }
     }
@@ -378,6 +445,22 @@ table.table thead td:not(:nth-child(1)), table.table tbody td:not(:nth-child(1))
 .avatarflex{
   padding-top: 0.4em;
   padding-bottom: 0.0em;
+}
+.margin{
+  margin-top: 10px;
+}
+
+.card__title--primary {
+    padding: 0px;
+    max-width: 20px;
+    margin:0px;
+}
+div.subs {
+  max-width: 90px;
+}
+div.subs2 {
+  padding-top:20px;
+  float: right;
 }
 
 </style>

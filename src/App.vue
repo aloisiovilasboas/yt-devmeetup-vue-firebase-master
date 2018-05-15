@@ -25,7 +25,7 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar color="indigo" dark fixed app>
+    <v-toolbar color="indigo darken-4" dark fixed app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>
         <router-link to="/" tag="span" style="cursor: pointer">Bolão do AFC</router-link>
@@ -58,7 +58,7 @@
           </main>
         
     </v-content>
-    <v-footer color="indigo" app>
+    <v-footer color="indigo darken-4" app>
       <span  class="white--text" >&copy; 2018</span>
     </v-footer>
   </v-app>

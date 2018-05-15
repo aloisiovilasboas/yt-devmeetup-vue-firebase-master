@@ -1,3 +1,14 @@
+            {time1GP: '1º do Grupo A' , time2GP: '2º do Grupo B'},
+            {time2GP: '1º do Grupo C' , time2GP: '2º do Grupo D'},
+            {time2GP: '1º do Grupo E' , time2GP: '2º do Grupo F'},
+            {time2GP: '1º do Grupo G' , time2GP: '2º do Grupo H'},
+            {time2GP: '1º do Grupo B' , time2GP: '2º do Grupo A'},
+            {time2GP: '1º do Grupo D' , time2GP: '2º do Grupo C'},
+            {time2GP: '1º do Grupo F' , time2GP: '2º do Grupo E'},
+            {time2GP: '1º do Grupo H' , time2GP: '2º do Grupo G'}
+
+
+
 teste1 () {
         var partidas = this.grupos[0].partidas
         var soma = 0

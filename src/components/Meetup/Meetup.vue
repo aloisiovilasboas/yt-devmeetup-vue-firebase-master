@@ -29,7 +29,9 @@
     props: ['id'],
     computed: {
       meetup () {
-        return this.$store.getters.loadedMeetup(this.id)
+        var m = this.$store.getters.loadedMeetup(this.id)
+        console.log(m)
+        return m
       }
     }
   }

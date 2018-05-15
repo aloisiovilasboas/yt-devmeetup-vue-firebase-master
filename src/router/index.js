@@ -10,7 +10,6 @@ import Admin from '@/components/User/Admin'
 import Signup from '@/components/User/Signup'
 import Signin from '@/components/User/Signin'
 import Meetup from '@/components/Meetup/Meetup'
-import CreateDatas from '@/components/Admin/CreateDatas'
 import CreateGrupo from '@/components/Admin/CreateGrupo'
 import AuthGuard from './auth-guard'
 
@@ -56,12 +55,6 @@ export default new Router({
       path: '/admin',
       name: 'Admin',
       component: Admin,
-      beforeEnter: AuthGuard
-    },
-    {
-      path: '/CreateDatas',
-      name: 'CreateDatas',
-      component: CreateDatas,
       beforeEnter: AuthGuard
     },
     {
