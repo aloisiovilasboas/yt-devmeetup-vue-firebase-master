@@ -64,33 +64,33 @@
       },
       geraPartidasSegundaFase () {
         var fases = [
-          {fase: 'oitavas', partidas: []},
-          {fase: 'quartas', partidas: []},
-          {fase: 'semi', partidas: []},
-          {fase: 'final', partidas: []}
+          {fase: 'Oitavas', partidas: []},
+          {fase: 'Quartas', partidas: []},
+          {fase: 'Semifinal', partidas: []},
+          {fase: 'Final', partidas: []}
         ]
         fases[0].partidas = [
-          {time1GP: '1º do A', time2GP: '2º do B', titulo: 'Oitavas 1', data: '30/06', hora: '15:00', gt1: 'A', gt2: 'B'},
-          {time1GP: '1º do C', time2GP: '2º do D', titulo: 'Oitavas 2', data: '30/06', hora: '11:00', gt1: 'C', gt2: 'D'},
-          {time1GP: '1º do E', time2GP: '2º do F', titulo: 'Oitavas 3', data: '02/07', hora: '11:00', gt1: 'E', gt2: 'F'},
-          {time1GP: '1º do G', time2GP: '2º do H', titulo: 'Oitavas 4', data: '02/07', hora: '15:00', gt1: 'G', gt2: 'H'},
-          {time1GP: '1º do B', time2GP: '2º do A', titulo: 'Oitavas 5', data: '01/07', hora: '11:00', gt1: 'B', gt2: 'A'},
-          {time1GP: '1º do D', time2GP: '2º do C', titulo: 'Oitavas 6', data: '01/07', hora: '15:00', gt1: 'D', gt2: 'C'},
-          {time1GP: '1º do F', time2GP: '2º do E', titulo: 'Oitavas 7', data: '03/07', hora: '11:00', gt1: 'F', gt2: 'E'},
-          {time1GP: '1º do H', time2GP: '2º do G', titulo: 'Oitavas 8', data: '03/07', hora: '15:00', gt1: 'H', gt2: 'G'}
+          {time1GP: '1º do A', time2GP: '2º do B', numero: '1', data: '30/06', hora: '15:00', gt1: 'A', gt2: 'B'},
+          {time1GP: '1º do C', time2GP: '2º do D', numero: '2', data: '30/06', hora: '11:00', gt1: 'C', gt2: 'D'},
+          {time1GP: '1º do E', time2GP: '2º do F', numero: '3', data: '02/07', hora: '11:00', gt1: 'E', gt2: 'F'},
+          {time1GP: '1º do G', time2GP: '2º do H', numero: '4', data: '02/07', hora: '15:00', gt1: 'G', gt2: 'H'},
+          {time1GP: '1º do B', time2GP: '2º do A', numero: '5', data: '01/07', hora: '11:00', gt1: 'B', gt2: 'A'},
+          {time1GP: '1º do D', time2GP: '2º do C', numero: '6', data: '01/07', hora: '15:00', gt1: 'D', gt2: 'C'},
+          {time1GP: '1º do F', time2GP: '2º do E', numero: '7', data: '03/07', hora: '11:00', gt1: 'F', gt2: 'E'},
+          {time1GP: '1º do H', time2GP: '2º do G', numero: '8', data: '03/07', hora: '15:00', gt1: 'H', gt2: 'G'}
         ]
         fases[1].partidas = [
-          {time1GP: 'Oitavas 1', time2GP: 'Oitavas 2', titulo: 'Quartas 1', data: '06/07', hora: '11:00'},
-          {time1GP: 'Oitavas 3', time2GP: 'Oitavas 4', titulo: 'Quartas 2', data: '06/07', hora: '15:00'},
-          {time1GP: 'Oitavas 5', time2GP: 'Oitavas 6', titulo: 'Quartas 3', data: '07/07', hora: '15:00'},
-          {time1GP: 'Oitavas 7', time2GP: 'Oitavas 8', titulo: 'Quartas 4', data: '07/07', hora: '11:00'}
+          {time1GP: 'Oitavas 1', time2GP: 'Oitavas 2', numero: '1', data: '06/07', hora: '11:00', t1: '1', t2: '2'},
+          {time1GP: 'Oitavas 3', time2GP: 'Oitavas 4', numero: '2', data: '06/07', hora: '15:00', t1: '3', t2: '4'},
+          {time1GP: 'Oitavas 5', time2GP: 'Oitavas 6', numero: '3', data: '07/07', hora: '15:00', t1: '5', t2: '6'},
+          {time1GP: 'Oitavas 7', time2GP: 'Oitavas 8', numero: '4', data: '07/07', hora: '11:00', t1: '7', t2: '8'}
         ]
         fases[2].partidas = [
-          {time1GP: 'Quartas 1', time2GP: 'Quartas 2', titulo: 'Semifinal 1', data: '10/07', hora: '15:00'},
-          {time1GP: 'Quartas 3', time2GP: 'Quartas 4', titulo: 'Semifinal 2', data: '11/07', hora: '15:00'}
+          {time1GP: 'Quartas 1', time2GP: 'Quartas 2', numero: '1', data: '10/07', hora: '15:00', t1: '1', t2: '2'},
+          {time1GP: 'Quartas 3', time2GP: 'Quartas 4', numero: '2', data: '11/07', hora: '15:00', t1: '3', t2: '4'}
         ]
         fases[3].partidas = [
-          {time1GP: 'Semifinal 1', time2GP: 'Semifinal 2', titulo: 'Final', data: '15/07', hora: '12:00'}
+          {time1GP: 'Semifinal 1', time2GP: 'Semifinal 2', numero: '1', data: '15/07', hora: '12:00', ot1: '1', ot2: '2'}
         ]
         console.log(fases)
         this.$store.dispatch('createPartidasSegundaFase', fases)

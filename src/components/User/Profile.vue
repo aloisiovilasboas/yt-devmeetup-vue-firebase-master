@@ -118,41 +118,45 @@
           </template>
         </v-data-table>
       </v-tab-item>
-      <v-tab-item v-for="fase in fases" :key="fase.id"
+      <v-tab-item v-for="(fase, indexFase) in fases" :key="fase.id"
         :id="fase.id">
-        
         <v-layout row wrap v-for="partida in fase.partidas" :key="partida.titulo">
           <v-flex xs12 sm10 md8 offset-sm1 offset-md2>
             <v-card class="margin" color="grey lighten-3">
               <v-container fluid>
                 <v-layout row>
                   <v-flex wrap sm 9>
-                  <v-radio-group :v-model="partida.titulo" column :disabled="partida.disabled">
+                  <v-radio-group column :disabled="(partida.time1.id === null || partida.time2.id === null )" :v-model="partida.selecionado" >
                     <v-layout row wrap >
                       <v-flex xs2 sm1 wrap >
-                        <v-avatar class="avatarflex" :size="24" :tile="true">
-                          <img :src="partida.t1imgurl">
+                        <v-avatar v-if="(partida.time1.imgurl !== null)" class="avatarflex" :size="24" :tile="true">
+                          <img :src="partida.time1.imgurl">
                         </v-avatar>
                       </v-flex>
                       <v-flex xs7 >
                         <v-radio
-                          :label="partida.time1GP"
-                          color="amber lighten-3"
-                          :value="partida.time1GP"
+                        :disabled="(partida.time1.id === null || partida.time2.id === null )"
+                          @change="updateRadios(fases,indexFase,partida,1)"
+                          :label="partida.time1.nome"
+                          color="indigo darken_4"
+                          :value="partida.time1"
+                          :isActive="true"
                         ></v-radio>
                       </v-flex>
                     </v-layout>
                     <v-layout row wrap >
                       <v-flex xs2 sm1 >
-                        <v-avatar class="avatarflex" :size="24" :tile="true">
-                          <img :src="partida.t2imgurl">
+                        <v-avatar v-if="(partida.time2.imgurl !== null)" class="avatarflex" :size="24" :tile="true">
+                          <img :src="partida.time2.imgurl">
                         </v-avatar>
                       </v-flex>
                       <v-flex xs7 >
                         <v-radio
-                          :label="partida.time2GP"
-                          color="amber lighten-3"
-                          :value="partida.time2GP"
+                        :disabled="(partida.time1.id === null || partida.time2.id === null )"
+                          @change="updateRadios(fases,indexFase,partida,2)"
+                          :label="partida.time2.nome"
+                          color="indigo darken_4"
+                          :value="partida.time2"
                         ></v-radio>
                       </v-flex>
                     </v-layout>
@@ -160,15 +164,45 @@
                   </v-flex>
                   <v-flex align-center sm1 class ="subs">
                     
-                        <div class="subs2">
-                            <h5 >{{ partida.titulo}}</h5>
+                        <div v-if="( indexFase !== 3 )" class="subs2">
+                            <h5 >{{fase.fase + ' ' + partida.numero}}</h5>
                           <div>{{ partida.data +' '+ partida.hora}}</div>
                         </div>
+                         <div v-else class="subs2">
+                            <h5 >{{fase.fase}}</h5>
+                          <div>{{ partida.data +' '+ partida.hora}}</div>
+                        </div>                       
                       
                   </v-flex>
                 </v-layout>
               </v-container>
             </v-card>
+
+            <v-card v-if="(indexFase === 3 && campeao.id !== null)" class="margin" dark color="gray darken-4">
+              <v-container fluid >
+                <v-layout row>
+                      <v-flex  >
+                        <h3 class="headline">Campeão</h3>
+                        <h3 class="title">{{campeao.nome}}</h3>
+                        <v-avatar class="avatarflex" :size="24" :tile="true">
+                          <img :src="campeao.imgurl">
+                        </v-avatar>
+                      </v-flex>
+                      
+                </v-layout>
+              </v-container>
+            </v-card>
+            <v-container fluid v-if="(indexFase === 3 && campeao.id !== null)" >
+                <v-layout row>
+            <v-flex xs12 class="text-xs-center text-sm-center">
+                      <v-btn large dark color="indigo darken-3" >
+                       <v-icon>save_alt</v-icon>
+                       <span>  Salvar Palpites </span>
+                       </v-btn>
+            </v-flex>
+            </v-layout>
+              </v-container>
+
           </v-flex>
         </v-layout>
       </v-tab-item>
@@ -183,7 +217,8 @@
       return {
         ex7: 'red',
         ex8: 'primary',
-        quartas: [],
+        selecionado: null,
+        campeao: {id: null, grupo: null, nome: null, imgurl: null},
         pagination: {'sortBy': 'pos', 'rowsPerPage': -1},
         ligacaop: 0,
         headers: [
@@ -208,13 +243,26 @@
         var partidas = this.$store.getters.loadedPartidas
         return partidas
       },
-      fases () {
+      segundaFase () {
         var fases = this.$store.getters.loadedFases
-        fases.forEach(fase => {
-          fase.partidas.forEach(partida => {
-            partida.disabled = true
-          })
-        })
+        return fases
+      },
+      fases () {
+        var fases = this.segundaFase
+        for (let i = 0; i < fases.length; i++) {
+          for (let j = 0; j < fases[i].partidas.length; j++) {
+            var time1 = {id: null, grupo: null, nome: null, imgurl: null}
+            var time2 = {id: null, grupo: null, nome: null, imgurl: null}
+            console.log(time1)
+            console.log(time2)
+            fases[i].partidas[j].time1 = time1
+            fases[i].partidas[j].time2 = time2
+            fases[i].partidas[j].time1.nome = this.segundaFase[i].partidas[j].time1GP
+            fases[i].partidas[j].time2.nome = this.segundaFase[i].partidas[j].time2GP
+            fases[i].partidas[j].disabled = true
+            fases[i].partidas[j].selecionado = null
+          }
+        }
         return fases
       },
       grupos () {
@@ -310,6 +358,31 @@
         })
         time.sg = Number(time.gp) - Number(time.gc)
       },
+      updateRadios (fases, indexFase, partida, ntime) {
+        partida.selecionado = ntime
+       /*  console.log(fases)
+        console.log(indexFase)
+        console.log(partida)
+        console.log(ntime)
+        console.log('fase: ' + indexFase + ' fn: ' + partida.numero)
+        console.log('fase seguinte: ' + Number(indexFase + 1) + ' p fase seguinte: ' + (Number(Math.ceil(partida.numero / 2) - 1)) + ' ntime: ' + Number(((partida.numero - 1) % 2) + 1))  */
+        var timesel = {id: null, grupo: null, nome: null, imgurl: null}
+        if (ntime === 1) {
+          timesel = partida.time1
+        } else {
+          timesel = partida.time2
+        }
+        if (indexFase === 3) {
+          this.campeao = timesel
+        } else {
+          if (Number(((partida.numero - 1) % 2) + 1) === 1) {
+            fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time1 = timesel
+          } else {
+            fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time2 = timesel
+          }
+        }
+        this.ligacaop += 1
+      },
       calculaPosicoes (grupo) {
         grupo.times.sort(function (timea, timeb) {
          // console.log(timea.p - timeb.p)
@@ -336,18 +409,40 @@
         var t1index = partidasOitavas.findIndex((p8) => {
           return p8.gt1 === grupo.l
         })
-        partidasOitavas[t1index].time1GP = grupo.times[0].nome
-        partidasOitavas[t1index].t1imgurl = grupo.times[0].imgurl
-        if (partidasOitavas[t1index].t2imgurl !== null) {
-          partidasOitavas[t1index].disabled = false
-        }
+        partidasOitavas[t1index].time1 = grupo.times[0]
         var t2index = partidasOitavas.findIndex((p8) => {
           return p8.gt2 === grupo.l
         })
-        partidasOitavas[t2index].time2GP = grupo.times[1].nome
-        partidasOitavas[t2index].t2imgurl = grupo.times[1].imgurl
-        if (partidasOitavas[t2index].t1imgurl !== null) {
-          partidasOitavas[t2index].disabled = false
+        partidasOitavas[t2index].time2 = grupo.times[1]
+      },
+      desmarcaOitavas (grupo) {
+        var partidasOitavas = this.fases[0].partidas
+        var t1index = partidasOitavas.findIndex((p8) => {
+          return p8.gt1 === grupo.l
+        })
+        partidasOitavas[t1index].time1 = {id: null, grupo: null, nome: null, imgurl: null}
+        partidasOitavas[t1index].time1.nome = this.segundaFase[0].partidas[t1index].time1GP
+        var t2index = partidasOitavas.findIndex((p8) => {
+          return p8.gt2 === grupo.l
+        })
+        partidasOitavas[t2index].time2 = {id: null, grupo: null, nome: null, imgurl: null}
+        partidasOitavas[t2index].time2.nome = this.segundaFase[0].partidas[t2index].time2GP
+        this.desmarcaProxFase(0, partidasOitavas[t1index])
+        this.desmarcaProxFase(0, partidasOitavas[t2index])
+      },
+      desmarcaProxFase (indexFase, partida) {
+        var nulltime = {id: null, grupo: null, nome: null, imgurl: null}
+        if (indexFase === 3) {
+          this.campeao = nulltime
+        } else {
+          if (Number(((partida.numero - 1) % 2) + 1) === 1) {
+            this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time1 = nulltime
+            this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time1.nome = this.segundaFase[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time1GP
+          } else {
+            this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time2 = nulltime
+            this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time2.nome = this.segundaFase[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time2GP
+          }
+          this.desmarcaProxFase(Number(indexFase + 1), this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))])
         }
       },
       update (numTime, indexG, indexP) {
@@ -378,6 +473,8 @@
           if (completo) {
             console.log('Completo!!!!!!')
             this.updateOitavas(grupo)
+          } else {
+            this.desmarcaOitavas(grupo)
           }
           this.ligacaop += 1
           console.log('ligacaop: ' + this.ligacaop)

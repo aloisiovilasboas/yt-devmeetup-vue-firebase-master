@@ -83,11 +83,8 @@
         ]
         if (this.userIsAuthenticated) {
           menuItems = [
-            {icon: 'supervisor_account', title: 'View Meetups', link: '/meetups'},
-            {icon: 'supervisor_account', title: 'Admin', link: '/admin'},
-            {icon: 'room', title: 'Organize Meetup', link: '/meetup/new'},
-            {icon: 'person', title: 'Profile', link: '/profile'},
-            {icon: 'casino', title: 'Apostas', link: '/apostas'}
+            {icon: 'casino', title: 'Apostas', link: '/profile'},
+            {icon: 'casino', title: 'admin', link: '/admin'}
           ]
         }
         return menuItems
