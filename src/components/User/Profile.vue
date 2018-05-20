@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid grid-list-md text-xs-center>
+  <v-container fluid grid-list-md text-xs-center :id="'container'">
 <v-tabs
     dark
     color="red darken-2"
@@ -120,7 +120,7 @@
       </v-tab-item>
       <v-tab-item v-for="(fase, indexFase) in fases" :key="fase.id"
         :id="fase.id">
-        <v-layout row wrap v-for="partida in fase.partidas" :key="partida.titulo">
+        <v-layout row wrap v-for="(partida, indexPartida) in fase.partidas" :key="partida.titulo">
           <v-flex xs12 sm10 md8 offset-sm1 offset-md2>
             <v-card class="margin" color="grey lighten-3">
               <v-container fluid>
@@ -135,6 +135,7 @@
                       </v-flex>
                       <v-flex xs7 >
                         <v-radio
+                        :ref="'radio' +indexFase+indexPartida+1"
                         :disabled="(partida.time1.id === null || partida.time2.id === null )"
                           @change="updateRadios(fases,indexFase,partida,1)"
                           :label="partida.time1.nome"
@@ -152,6 +153,7 @@
                       </v-flex>
                       <v-flex xs7 >
                         <v-radio
+                        :ref="'radio' +indexFase+indexPartida+2"
                         :disabled="(partida.time1.id === null || partida.time2.id === null )"
                           @change="updateRadios(fases,indexFase,partida,2)"
                           :label="partida.time2.nome"
@@ -253,8 +255,6 @@
           for (let j = 0; j < fases[i].partidas.length; j++) {
             var time1 = {id: null, grupo: null, nome: null, imgurl: null}
             var time2 = {id: null, grupo: null, nome: null, imgurl: null}
-            console.log(time1)
-            console.log(time2)
             fases[i].partidas[j].time1 = time1
             fases[i].partidas[j].time2 = time2
             fases[i].partidas[j].time1.nome = this.segundaFase[i].partidas[j].time1GP
@@ -392,7 +392,19 @@
             if (timeb.sg - timea.sg !== 0) {
               return timeb.sg - timea.sg
             } else {
-              return timeb.gp - timea.gp
+              if (timeb.gp - timea.gp !== 0) {
+                return timeb.gp - timea.gp
+              } else {
+                var pindex = grupo.partidas.findIndex((pG) => {
+                  return ((pG.time1.id === timea.id && pG.time2.id === timeb.id) || (pG.time1.id === timeb.id && pG.time2.id === timea.id))
+                })
+                var pG = grupo.partidas[pindex]
+                if (pG.time1.id === timea.id && pG.time2.id === timeb.id) {
+                  return pG.time2gols - pG.time1gols
+                } else {
+                  return pG.time1gols - pG.time2gols
+                }
+              }
             }
           }
         })
@@ -422,11 +434,17 @@
         })
         partidasOitavas[t1index].time1 = {id: null, grupo: null, nome: null, imgurl: null}
         partidasOitavas[t1index].time1.nome = this.segundaFase[0].partidas[t1index].time1GP
+        console.log('radio' + 0 + t1index)
+        this.$refs['radio' + 0 + t1index + 1][0].isActive = false
+        this.$refs['radio' + 0 + t1index + 2][0].isActive = false
         var t2index = partidasOitavas.findIndex((p8) => {
           return p8.gt2 === grupo.l
         })
         partidasOitavas[t2index].time2 = {id: null, grupo: null, nome: null, imgurl: null}
         partidasOitavas[t2index].time2.nome = this.segundaFase[0].partidas[t2index].time2GP
+        console.log('radio' + 0 + t2index)
+        this.$refs['radio' + 0 + t2index + 1][0].isActive = false
+        this.$refs['radio' + 0 + t2index + 2][0].isActive = false
         this.desmarcaProxFase(0, partidasOitavas[t1index])
         this.desmarcaProxFase(0, partidasOitavas[t2index])
       },
@@ -435,6 +453,8 @@
         if (indexFase === 3) {
           this.campeao = nulltime
         } else {
+          this.$refs['radio' + Number(indexFase + 1) + (Number(Math.ceil(partida.numero / 2) - 1)) + 1][0].isActive = false
+          this.$refs['radio' + Number(indexFase + 1) + (Number(Math.ceil(partida.numero / 2) - 1)) + 2][0].isActive = false
           if (Number(((partida.numero - 1) % 2) + 1) === 1) {
             this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time1 = nulltime
             this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time1.nome = this.segundaFase[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time1GP
@@ -477,7 +497,7 @@
             this.desmarcaOitavas(grupo)
           }
           this.ligacaop += 1
-          console.log('ligacaop: ' + this.ligacaop)
+         // console.log('ligacaop: ' + this.ligacaop)
         }
       }
     }

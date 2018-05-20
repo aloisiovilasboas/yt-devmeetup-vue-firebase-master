@@ -13,10 +13,11 @@
                     <v-icon left light>arrow_forward</v-icon>
                     Gera Partidas
                   </v-btn>-->
-                  <v-btn  v-on:click="geraPartidasSegundaFase">
+               <!--   <v-btn  v-on:click="geraPartidasSegundaFase">
                     <v-icon left light>arrow_forward</v-icon>
                     Gera Partidas Segunda Fase
                   </v-btn> 
+                  -->
                   
   </div>
   
