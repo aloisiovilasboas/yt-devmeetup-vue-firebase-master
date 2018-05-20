@@ -13,18 +13,46 @@
                     <v-icon left light>arrow_forward</v-icon>
                     Gera Partidas
                   </v-btn>-->
-               <!--   <v-btn  v-on:click="geraPartidasSegundaFase">
+             <!--     <v-btn  v-on:click="geraPartidasSegundaFase">
                     <v-icon left light>arrow_forward</v-icon>
                     Gera Partidas Segunda Fase
-                  </v-btn> 
-                  -->
-                  
-  </div>
-  
+                  </v-btn> -->
+                  <v-flex xs12 sm10 md8 offset-sm1 offset-md2>
+                    
+                    <v-card class="margin" color="grey lighten-3">  
+                    <v-flex > 
+                      <v-flex>
+                       <v-text-field 
+                          label="admin id:"
+                           v-model="adminid"
+                        ></v-text-field>
+                        </v-flex>
+                        <v-btn  v-on:click="addAdmin">
+                          <v-icon left light>arrow_forward</v-icon>
+                          Adiciona Admin
+                        </v-btn>
+                    </v-flex>
+                    </v-card>
+
+                   <v-card class="margin" color="grey lighten-3">  
+                    <v-flex > 
+                	  <v-btn  :to="'/Usuarios'">
+                      <v-icon left light>arrow_forward</v-icon>
+                        Usuarios
+                     </v-btn>
+                    </v-flex>
+                    </v-card>
+                  </v-flex>
+  </div>  
 </template>
 
 <script>
   export default {
+    data () {
+      return {
+        adminid: ''
+      }
+    },
     methods: {
       geraSiglas () {
         function removerAcentos (s) {
@@ -63,7 +91,7 @@
         this.$store.dispatch('createPartidas', todasAsPartidas)
         this.$router.push('/profile')
       },
-      geraPartidasSegundaFase () {
+      /* geraPartidasSegundaFase () {
         var fases = [
           {fase: 'Oitavas', partidas: []},
           {fase: 'Quartas', partidas: []},
@@ -96,6 +124,9 @@
         console.log(fases)
         this.$store.dispatch('createPartidasSegundaFase', fases)
         this.$router.push('/profile')
+      } */
+      addAdmin () {
+        this.$store.dispatch('createAdmin', this.adminid)
       }
     }
   }

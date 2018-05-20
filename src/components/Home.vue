@@ -6,7 +6,7 @@
           <v-btn large router to="/meetups" class="info">Explore Meetups</v-btn>
         </v-flex> -->
         <v-flex xs12 sm6 class="text-xs-center text-sm-left">
-          <v-btn large router to="/profile" class="info">Cadastrar Palpites</v-btn>
+          <v-btn large router to="/apostas" class="info">Cadastrar Palpites</v-btn>
         </v-flex>
       </v-layout>
       <v-layout>

@@ -4,9 +4,10 @@ import Home from '@/components/Home'
 import Meetups from '@/components/Meetup/Meetups'
 import CreateMeetup from '@/components/Meetup/CreateMeetup'
 import Profile from '@/components/User/Profile'
-import Grupo1 from '@/components/Apostas/Grupo1'
 import Apostas from '@/components/User/Apostas'
-import Admin from '@/components/User/Admin'
+import Admin from '@/components/Admin/Admin'
+import Usuarios from '@/components/Admin/Usuarios'
+import Cadastre from '@/components/Admin/Cadastre'
 import Signup from '@/components/User/Signup'
 import Signin from '@/components/User/Signin'
 import Meetup from '@/components/Meetup/Meetup'
@@ -21,6 +22,46 @@ export default new Router({
       path: '/',
       name: 'Home',
       component: Home
+    },
+    {
+      path: '/admin',
+      name: 'Admin',
+      component: Admin,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/apostas',
+      name: 'Apostas',
+      component: Apostas,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Profile,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/CreateGrupo',
+      name: 'CreateGrupo',
+      component: CreateGrupo,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/Usuarios',
+      name: 'Usuarios',
+      component: Usuarios,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/signin',
+      name: 'Signin',
+      component: Signin
+    },
+    {
+      path: '/signup',
+      name: 'Signup',
+      component: Signup
     },
     {
       path: '/meetups',
@@ -40,44 +81,10 @@ export default new Router({
       component: Meetup
     },
     {
-      path: '/profile',
-      name: 'Profile',
-      component: Profile,
-      beforeEnter: AuthGuard
-    },
-    {
-      path: '/grupo1',
-      name: 'Grupo1',
-      component: Grupo1,
-      beforeEnter: AuthGuard
-    },
-    {
-      path: '/admin',
-      name: 'Admin',
-      component: Admin,
-      beforeEnter: AuthGuard
-    },
-    {
-      path: '/CreateGrupo',
-      name: 'CreateGrupo',
-      component: CreateGrupo,
-      beforeEnter: AuthGuard
-    },
-    {
-      path: '/apostas',
-      name: 'Apostas',
-      component: Apostas,
-      beforeEnter: AuthGuard
-    },
-    {
-      path: '/signup',
-      name: 'Signup',
-      component: Signup
-    },
-    {
-      path: '/signin',
-      name: 'Signin',
-      component: Signin
+      path: '/cadastre/:id',
+      name: 'Cadastre',
+      props: true,
+      component: Cadastre
     }
   ],
   mode: 'history'

@@ -6,6 +6,8 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
+    loadedAdmins: [],
+    loadedUsuarios: [],
     loadedMeetups: [
       {
         imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/4/47/New_york_times_square-terabass.jpg',
@@ -46,6 +48,12 @@ export const store = new Vuex.Store({
     setLoadedMeetups (state, payload) {
       state.loadedMeetups = payload
     },
+    setLoadedAdmins (state, payload) {
+      state.loadedAdmins = payload
+    },
+    setLoadedUsuarios (state, payload) {
+      state.loadedUsuarios = payload
+    },
     setLoadedTimes (state, payload) {
       state.loadedTimes = payload
     },
@@ -57,6 +65,12 @@ export const store = new Vuex.Store({
     },
     createMeetup (state, payload) {
       state.loadedMeetups.push(payload)
+    },
+    createAdmin (state, payload) {
+      state.loadedAdmins.push(payload)
+    },
+    createUsuario (state, payload) {
+      state.loadedUsuarios.push(payload)
     },
     createGrupo (state, payload) {
       state.loadedTimes.push(payload)
@@ -92,6 +106,52 @@ export const store = new Vuex.Store({
             })
           }
           commit('setLoadedMeetups', meetups)
+          commit('setLoading', false)
+        })
+        .catch(
+          (error) => {
+            console.log(error)
+            commit('setLoading', false)
+          }
+        )
+    },
+    loadAdmins ({commit}) {
+      commit('setLoading', true)
+      firebase.database().ref('admins').once('value')
+        .then((data) => {
+          const admins = []
+          const obj = data.val()
+          for (let key in obj) {
+            admins.push({
+              id: key,
+              adminId: obj[key].id,
+              addedby: obj[key].addedby
+            })
+          }
+          commit('setLoadedAdmins', admins)
+          commit('setLoading', false)
+        })
+        .catch(
+          (error) => {
+            console.log(error)
+            commit('setLoading', false)
+          }
+        )
+    },
+    loadUsuarios ({commit}) {
+      commit('setLoading', true)
+      firebase.database().ref('usuarios').once('value')
+        .then((data) => {
+          const usuarios = []
+          const obj = data.val()
+          for (let key in obj) {
+            usuarios.push({
+              id: key,
+              nome: obj[key].nome,
+              addedby: obj[key].addedby
+            })
+          }
+          commit('setLoadedUsuarios', usuarios)
           commit('setLoading', false)
         })
         .catch(
@@ -249,6 +309,36 @@ export const store = new Vuex.Store({
       })
       // Reach out to firebase and store it
     },
+    createAdmin ({commit, getters}, payload) {
+      const adminid = payload
+      const newAdmin = {id: adminid, addedby: store.getters.user.id}
+      firebase.database().ref('admins').push(newAdmin)
+      .then((data) => {
+        const key = data.key
+        commit('createAdmin', {
+          ...newAdmin,
+          id: key
+        })
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    },
+    createUsuario ({commit, getters}, payload) {
+      const nomeUsuario = payload
+      const novoUsuario = {nome: nomeUsuario, addedby: store.getters.user.id}
+      firebase.database().ref('usuarios').push(novoUsuario)
+      .then((data) => {
+        const key = data.key
+        commit('createUsuario', {
+          ...novoUsuario,
+          id: key
+        })
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    },
     createPartidasSegundaFase ({commit, getters}, payload) {
       const fases = payload
       fases.forEach(fase => {
@@ -400,6 +490,12 @@ export const store = new Vuex.Store({
     loadedTimes (state) {
       return state.loadedTimes
     },
+    loadedAdmins (state) {
+      return state.loadedAdmins
+    },
+    loadedUsuarios (state) {
+      return state.loadedUsuarios
+    },
     loadedPartidas (state) {
       return state.loadedPartidas
     },
@@ -413,6 +509,14 @@ export const store = new Vuex.Store({
       return (meetupId) => {
         return state.loadedMeetups.find((meetup) => {
           return meetup.id === meetupId
+        })
+      }
+    },
+    loadedUsuario (state) {
+      return (usuarioid) => {
+        console.log(state.loadedUsuarios)
+        return state.loadedUsuarios.find((usuario) => {
+          return usuario.id === usuarioid
         })
       }
     },

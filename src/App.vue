@@ -78,24 +78,38 @@
     computed: {
       menuItems () {
         let menuItems = [
-          {icon: 'face', title: 'Sign up', link: '/signup'},
-          {icon: 'lock_open', title: 'Sign in', link: '/signin'}
+         // {icon: 'face', title: 'Sign up', link: '/signup'},
+          {icon: 'lock_open', title: 'Login', link: '/signin'}
         ]
         if (this.userIsAuthenticated) {
           menuItems = [
-            {icon: 'casino', title: 'Apostas', link: '/profile'},
-            {icon: 'casino', title: 'admin', link: '/admin'}
+            {icon: 'casino', title: 'Apostas', link: '/apostas'}
           ]
+          if (this.isAdmin) {
+            menuItems.push({icon: 'casino', title: 'admin', link: '/admin'})
+          }
         }
         return menuItems
       },
       userIsAuthenticated () {
         return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+      },
+      isAdmin () {
+        var admins = this.$store.getters.loadedAdmins
+        var user = this.$store.getters.user
+        var isAdmin = false
+        admins.forEach(admin => {
+          if (admin.adminId === user.id) {
+            isAdmin = true
+          }
+        })
+        return isAdmin
       }
     },
     methods: {
       onLogout () {
         this.$store.dispatch('logout')
+        this.$router.push('/')
       }
     }
   }
