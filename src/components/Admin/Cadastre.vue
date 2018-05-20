@@ -21,8 +21,19 @@
         <v-card v-if="!loading">
           <v-card-text>
             <v-container>
-              <div>Bem vindo, {{usuarioNovo.nome}} </div>
+              <div>Bem vindo, {{usuarioNovo.nomeOriginal}} </div>
               <form @submit.prevent="onSignup">
+                <v-layout row>
+                  <v-flex xs12>
+                    <v-text-field
+                      name="name"
+                      label="Nome"
+                      id="name"
+                      v-model="name"
+                      type="text"
+                      required></v-text-field>
+                  </v-flex>
+                </v-layout>
                 <v-layout row>
                   <v-flex xs12>
                     <v-text-field
@@ -82,12 +93,13 @@
       return {
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        name: ''
       }
     },
     computed: {
       comparePasswords () {
-        return this.password !== this.confirmPassword ? 'Passwords do not match' : ''
+        return this.password !== this.confirmPassword ? 'As senhas não conferem' : ''
       },
       user () {
         return this.$store.getters.user
@@ -101,8 +113,8 @@
       usuarioNovo () {
         if (!this.loading) {
           var u = this.$store.getters.loadedUsuario(this.id)
-          console.log(u)
-          if (u === null || u === undefined) {
+        //  console.log(u)
+          if (u === null || u === undefined || !u.pendente) {
             u = {nome: ''}
             this.$router.push('/')
           }
@@ -121,6 +133,7 @@
     },
     methods: {
       onSignup () {
+        this.$store.dispatch('cadastraUsuario', {id: this.usuarioNovo.id, nomeOriginal: this.usuarioNovo.nomeOriginal, addedby: this.usuarioNovo.addedby, nome: this.name, email: this.email})
         this.$store.dispatch('signUserUp', {email: this.email, password: this.password})
       },
       onDismissed () {

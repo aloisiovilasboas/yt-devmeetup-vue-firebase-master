@@ -147,7 +147,10 @@ export const store = new Vuex.Store({
           for (let key in obj) {
             usuarios.push({
               id: key,
+              nomeOriginal: obj[key].nomeOriginal,
               nome: obj[key].nome,
+              email: obj[key].email,
+              pendente: obj[key].pendente,
               addedby: obj[key].addedby
             })
           }
@@ -326,7 +329,7 @@ export const store = new Vuex.Store({
     },
     createUsuario ({commit, getters}, payload) {
       const nomeUsuario = payload
-      const novoUsuario = {nome: nomeUsuario, addedby: store.getters.user.id}
+      const novoUsuario = {nomeOriginal: nomeUsuario, addedby: store.getters.user.id, pendente: true}
       firebase.database().ref('usuarios').push(novoUsuario)
       .then((data) => {
         const key = data.key
@@ -334,6 +337,23 @@ export const store = new Vuex.Store({
           ...novoUsuario,
           id: key
         })
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    },
+    cadastraUsuario ({commit, getters}, payload) {
+      console.log(payload)
+      var usuario = {nomeOriginal: payload.nomeOriginal, addedby: payload.addedby, nome: payload.nome, email: payload.email}
+      const id = payload.id
+      console.log(payload)
+      firebase.database().ref('usuarios/' + id).set(usuario).then((data) => {
+        console.log(data)
+        /* const key = data.key
+         commit('createUsuario', {
+          ...usuario,
+          id: key
+        }) */
       })
       .catch((error) => {
         console.log(error)
@@ -514,7 +534,7 @@ export const store = new Vuex.Store({
     },
     loadedUsuario (state) {
       return (usuarioid) => {
-        console.log(state.loadedUsuarios)
+       // console.log(state.loadedUsuarios)
         return state.loadedUsuarios.find((usuario) => {
           return usuario.id === usuarioid
         })
