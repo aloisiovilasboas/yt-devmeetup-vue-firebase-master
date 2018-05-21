@@ -45,8 +45,7 @@ export default new Router({
     {
       path: '/apostas',
       name: 'Apostas',
-      component: Apostas,
-      beforeEnter: AuthGuard
+      component: Apostas
     },
     {
       path: '/apostasCadastradas',

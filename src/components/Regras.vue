@@ -5,7 +5,11 @@
           <div class="about" >
             <h2>Regras do Bolão</h2>
             <span style="display: inline-block; margin-top: 20px;" > </span>
-            <p class="paragrafo">Para participar do Bolão do AFC 2018, preencha a sua planilha de apostas e submeta os seus palpites até as 12h do dia 14 de junho de 2018, quando será dado o pontapé inicial da Copa do Mundo FIFA 2018. Lembre que para garantir a sua inscrição, é preciso também, até a mesma data e horário, confirmar o pagamento da sua cota de R$25,00 a um dos organizadores. Não serão aceitos palpites submetidos após o prazo. Depois disso, é só aguardar os resultados dos jogos e torcer pelas seleções que você apostou. A pontuação do bolão se dará da seguinte forma: 
+            <p class="paragrafo">
+              Para participar do Bolão do AFC 2018, entre em contato com algum membro da organização. Em seguida, clique no link fornecido pela organização e realize o seu cadastro. Atenção, o link é individual e intransferível e funciona para um único cadastro. Preencha os dados das suas apostas e submeta os seus palpites até as 12h do dia 14 de junho de 2018, quando será dado o pontapé inicial da Copa do Mundo FIFA 2018. Lembre que para garantir a sua inscrição, é preciso também, até a mesma data e horário, confirmar o pagamento da sua cota de R$25,00 a um dos organizadores. Não serão aceitos palpites submetidos após o prazo. Depois disso, é só aguardar os resultados dos jogos e torcer pelas seleções que você apostou.
+            </p>
+             <p>
+               A pontuação do bolão se dará da seguinte forma:
             </p>
             <span style="display: inline-block; margin-top: 20px;" > </span>
 

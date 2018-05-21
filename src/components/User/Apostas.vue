@@ -1,5 +1,10 @@
 <template>
   <v-container fluid grid-list-md text-xs-center :id="'container'">
+
+<v-alert :value="!userIsAuthenticated" type="info">
+      Você ainda não está cadastrado. Procure um dos organizadores para saber como participar. Boa sorte!
+    </v-alert>
+
 <v-tabs
     dark
     color="red darken-2"
@@ -54,6 +59,7 @@
                     <div  class="text-xs-right"> {{partida.time1.sigla}}</div>
                     <v-layout class = "input1layout">
                           <v-text-field
+                          :disabled="!userIsAuthenticated"
                             v-model="partida.time1gols"
                             @change="update(1, indexG, indexP)"
                             type="number"
@@ -74,6 +80,7 @@
                     <div  class="text-xs-right"> {{partida.time2.sigla}}</div>
                     <v-layout class = "input1layout">
                           <v-text-field
+                            :disabled="!userIsAuthenticated"
                             class = "input1"
                             type="number"
                             v-model="partida.time2gols"
@@ -238,6 +245,9 @@
       }
     },
     computed: {
+      userIsAuthenticated () {
+        return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+      },
       times () {
         return this.$store.getters.loadedTimes
       },
