@@ -31,7 +31,7 @@
         <router-link to="/" tag="span" style="cursor: pointer">Bolão do AFC</router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-items class="hidden-xs-only">
+      <v-toolbar-items class="hidden-lg-and-down">
         <v-btn
           flat
           v-for="item in menuItems"
@@ -83,12 +83,15 @@
         ]
         if (this.userIsAuthenticated) {
           menuItems = [
-            {icon: 'casino', title: 'Apostas', link: '/apostas'}
+            {icon: 'casino', title: 'Fazer Apostas', link: '/apostas'},
+            {icon: 'line_style', title: 'Apostas Cadastradas', link: '/apostasCadastradas'}
           ]
           if (this.isAdmin) {
-            menuItems.push({icon: 'casino', title: 'admin', link: '/admin'})
+            menuItems.push({icon: 'person', title: 'admin', link: '/admin'})
           }
         }
+        menuItems.push({icon: 'list_alt', title: 'Regras', link: '/regras'})
+        menuItems.push({icon: 'info', title: 'Sobre', link: '/sobre'})
         return menuItems
       },
       userIsAuthenticated () {

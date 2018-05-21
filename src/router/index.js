@@ -1,10 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
+import Regras from '@/components/Regras'
+import Sobre from '@/components/Sobre'
 import Meetups from '@/components/Meetup/Meetups'
 import CreateMeetup from '@/components/Meetup/CreateMeetup'
 import Profile from '@/components/User/Profile'
 import Apostas from '@/components/User/Apostas'
+import ApostasCadastradas from '@/components/User/ApostasCadastradas'
 import Admin from '@/components/Admin/Admin'
 import Usuarios from '@/components/Admin/Usuarios'
 import Cadastre from '@/components/Admin/Cadastre'
@@ -24,6 +27,16 @@ export default new Router({
       component: Home
     },
     {
+      path: '/regras',
+      name: 'Regras',
+      component: Regras
+    },
+    {
+      path: '/sobre',
+      name: 'Sobre',
+      component: Sobre
+    },
+    {
       path: '/admin',
       name: 'Admin',
       component: Admin,
@@ -33,6 +46,12 @@ export default new Router({
       path: '/apostas',
       name: 'Apostas',
       component: Apostas,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/apostasCadastradas',
+      name: 'ApostasCadastradas',
+      component: ApostasCadastradas,
       beforeEnter: AuthGuard
     },
     {

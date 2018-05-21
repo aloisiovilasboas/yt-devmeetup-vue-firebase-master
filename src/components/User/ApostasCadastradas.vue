@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid grid-list-md text-xs-center :id="'container'">
+  <v-container v-if = "$store.getters.loadedMinhasApostas !== null" fluid grid-list-md text-xs-center :id="'container'">
 <v-tabs
     dark
     color="red darken-2"
@@ -38,13 +38,13 @@
     
     <v-tabs-items>
       <v-tab-item
-        v-for="(grupo, indexG) in grupos"
+        v-for="grupo in grupos"
         :key="grupo.l"
         :id="'grupo-' + grupo.l">
       
         <!-- <h1 v-for="partida in grupo.partidas" :key="partida.id" >{{partida.time1nome}}</h1>-->
-
-        <v-layout v-for="(partida, indexP) in grupo.partidas" :key="partida.id" column>
+        <span style="display: inline-block; margin-top: 20px;" > </span>
+        <v-layout v-for="partida in grupo.partidas" :key="partida.id" column>
           <v-layout fluid wrap row align-items justify-center >
                <v-flex xs4 sm2 lg1 >
                  <v-layout row align-items align-center coluna1 justify-space-between>
@@ -52,19 +52,21 @@
                         <img :src="partida.time1.imgurl">
                     </v-avatar>
                     <div  class="text-xs-right"> {{partida.time1.sigla}}</div>
+                    
                     <v-layout class = "input1layout">
-                          <v-text-field
+                      <div class="subheading"> {{partida.time1gols}} </div>
+                    <!--      <v-text-field
                             v-model="partida.time1gols"
                             @change="update(1, indexG, indexP)"
                             type="number"
                             class ="input1"
                             single-line
-                          ></v-text-field>
-                    </v-layout>
+                          ></v-text-field> -->
+                    </v-layout> 
                  </v-layout>
               </v-flex>
               <v-flex  xs2 md1 align-end justify-end align-content-end >
-              <div class="xizinho"><p class="xizinho">x</p></div>
+              <div ><p>x</p></div>
               </v-flex>
               <v-flex xs4 sm2 lg1>     
                  <v-layout row align-center reverse coluna1 justify-space-between>
@@ -73,7 +75,8 @@
                      </v-avatar>
                     <div  class="text-xs-right"> {{partida.time2.sigla}}</div>
                     <v-layout class = "input1layout">
-                          <v-text-field
+                      <div class = "subheading "> {{partida.time2gols}} </div>
+                       <!--   <v-text-field
                             class = "input1"
                             type="number"
                             v-model="partida.time2gols"
@@ -81,7 +84,7 @@
                             :pagination.sync="pagination"
                             hide-actions
                             single-line
-                          ></v-text-field>
+                          ></v-text-field> -->
                     </v-layout>
                  </v-layout>
             </v-flex>         
@@ -136,7 +139,7 @@
                       <v-flex xs7 >
                         <v-radio
                         :ref="'radio' +indexFase+indexPartida+1"
-                        :disabled="(partida.time1.id === null || partida.time2.id === null )"
+                        :disabled="true"
                           @change="updateRadios(fases,indexFase,partida,1)"
                           :label="partida.time1.nome"
                           color="indigo darken_4"
@@ -154,7 +157,7 @@
                       <v-flex xs7 >
                         <v-radio
                         :ref="'radio' +indexFase+indexPartida+2"
-                        :disabled="(partida.time1.id === null || partida.time2.id === null )"
+                        :disabled="true"
                           @change="updateRadios(fases,indexFase,partida,2)"
                           :label="partida.time2.nome"
                           color="indigo darken_4"
@@ -180,8 +183,8 @@
               </v-container>
             </v-card>
 
-            <v-card v-if="(indexFase === 3 && campeao.id !== null)" class="margin" dark color="gray darken-4">
-              <v-container fluid >
+            <v-card v-if="(indexFase === 3)" class="margin" dark color="gray darken-4">
+              <v-container fluid  >
                 <v-layout row>
                       <v-flex  >
                         <h3 class="headline">Campeão</h3>
@@ -194,27 +197,31 @@
                 </v-layout>
               </v-container>
             </v-card>
-            <v-container fluid v-if="(indexFase === 3 && campeao.id !== null)" >
-                <v-layout row>
-            <v-flex xs12 class="text-xs-center text-sm-center">
-                      <v-btn v-on:click="salvarPalpites" large dark color="indigo darken-3" >
-                       <v-icon>send</v-icon>
-                       <span>  Salvar Palpites </span>
-                       </v-btn>
-            </v-flex>
-            </v-layout>
-              </v-container>
-
           </v-flex>
         </v-layout>
       </v-tab-item>
     </v-tabs-items>
   </v-tabs>
   </v-container>
+  <v-container v-else>
+    <div class = "text-xs-center">Você ainda não cadastrou seu palpite.</div>
+            <span style="display: inline-block; margin-top: 20px;" > </span>
+
+    <v-flex xs12 sm6 class="text-xs-center text-sm-left">
+          <v-btn large router to="/apostas" class="info">Cadastrar Palpite </v-btn>
+        </v-flex>
+  </v-container>
 </template>
 
 <script>
   export default {
+    beforeCreate () {
+      this.$store.dispatch('loadMinhasApostas')
+      // var ap = this.$store.getters.loadedMinhasApostas
+      //  console.log('ap')
+      //  console.log(ap.fases)
+      //  console.log(ap.grupos)
+    },
     data () {
       return {
         ex7: 'red',
@@ -238,6 +245,18 @@
       }
     },
     computed: {
+      loading () {
+        return this.$store.getters.loading
+      },
+      minhasApostasGrupos () {
+       // console.log('apgrupos:')
+       // console.log(this.$store.getters.loadedMinhasApostas.grupos)
+        return this.$store.getters.loadedMinhasApostas.grupos
+      },
+      minhasApostasFases () {
+     //   console.log(this.$store.getters.loadedMinhasApostas.fases)
+        return this.$store.getters.loadedMinhasApostas.fases
+      },
       times () {
         return this.$store.getters.loadedTimes
       },
@@ -313,7 +332,10 @@
             partidas: partidasGrupo
           })
         })
-        this.gruposOrganizados = gruposOrganizados
+        gruposOrganizados.forEach(grupo => {
+          this.update(grupo)
+        })
+        this.updateRadios()
         return gruposOrganizados
       }
     },
@@ -358,30 +380,45 @@
         })
         time.sg = Number(time.gp) - Number(time.gc)
       },
-      updateRadios (fases, indexFase, partida, ntime) {
-        partida.selecionado = ntime
-       /*  console.log(fases)
-        console.log(indexFase)
-        console.log(partida)
-        console.log(ntime)
-        console.log('fase: ' + indexFase + ' fn: ' + partida.numero)
-        console.log('fase seguinte: ' + Number(indexFase + 1) + ' p fase seguinte: ' + (Number(Math.ceil(partida.numero / 2) - 1)) + ' ntime: ' + Number(((partida.numero - 1) % 2) + 1))  */
-        var timesel = {id: null, grupo: null, nome: null, imgurl: null}
-        if (ntime === 1) {
-          timesel = partida.time1
-        } else {
-          timesel = partida.time2
+      updateRadios () {
+        // (fases, indexFase, partida, ntime)
+        var apFases = this.minhasApostasFases
+        for (let indexFase = 0; indexFase < this.fases.length; indexFase++) {
+          const fase = this.fases[indexFase]
+          var indexF = apFases.findIndex((apf) => {
+            return apf.id === fase.id
+          })
+          var apf = apFases[indexF]
+          fase.partidas.forEach(partida => {
+            var indexP = apf.partidas.findIndex((app) => {
+              return app.numero === partida.numero
+            })
+            var app = apf.partidas[indexP]
+            partida.selecionado = app.selecionado
+            var ntime = partida.selecionado
+            if (this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime] !== undefined) {
+              console.log('radio' + indexFase + partida.numero + ntime)
+              console.log(this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime][0])
+              this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime][0].isActive = true
+            }
+            var timesel = {id: null, grupo: null, nome: null, imgurl: null}
+            if (ntime === 1) {
+              timesel = partida.time1
+            } else {
+              timesel = partida.time2
+            }
+            if (fase.fase === 'Final') {
+              this.campeao = timesel
+            } else {
+              if (Number(((partida.numero - 1) % 2) + 1) === 1) {
+                this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time1 = timesel
+              } else {
+                this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time2 = timesel
+              }
+            }
+            this.ligacaop += 1
+          })
         }
-        if (indexFase === 3) {
-          this.campeao = timesel
-        } else {
-          if (Number(((partida.numero - 1) % 2) + 1) === 1) {
-            fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time1 = timesel
-          } else {
-            fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time2 = timesel
-          }
-        }
-        this.ligacaop += 1
       },
       calculaPosicoes (grupo) {
         grupo.times.sort(function (timea, timeb) {
@@ -465,40 +502,31 @@
           this.desmarcaProxFase(Number(indexFase + 1), this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))])
         }
       },
-      update (numTime, indexG, indexP) {
-       // console.log(numTime)
-       // console.log('indexg:' + indexG)
-       // console.log('indexp: ' + indexP)
-        var grupo = this.grupos[indexG]
-       // console.log(grupo)
-        var partida = grupo.partidas[indexP]
-        var time1 = partida.time1
-        var time2 = partida.time2
-        var b1 = (true)
-        var b2 = (true)
-        if (b1 || b2) {
-          this.calculaPontuacao(time1, grupo)
-          this.calculaPontuacao(time2, grupo)
-          this.calculaPosicoes(grupo)
-          this.pagination.sortBy = 'name'
-          this.pagination.sortBy = 'pos'
-          // calcula completude
-          var completo = true
-          for (let i = 0; (i < grupo.times.length && completo); i++) {
-            const time = grupo.times[i]
-            if (time.v + time.e + time.d !== 3) {
-              completo = false
-            }
-          }
-          if (completo) {
-            console.log('Completo!!!!!!')
-            this.updateOitavas(grupo)
-          } else {
-            this.desmarcaOitavas(grupo)
-          }
+      update (grupo) {
+       // (numTime, indexG, indexP)
+       // var grupo = this.grupos[indexG]
+       // var partida = grupo.partidas[indexP]
+        var apGrupos = this.minhasApostasGrupos
+        var indexG = apGrupos.findIndex((apg) => {
+          return apg.l === grupo.l
+        })
+        var apg = apGrupos[indexG]
+        grupo.partidas.forEach(partida => {
+          var indexP = apg.partidas.findIndex((app) => {
+            return app.id === partida.id
+          })
+          var app = apg.partidas[indexP]
+          partida.time1gols = app.time1gols
+          partida.time2gols = app.time2gols
           this.ligacaop += 1
-         // console.log('ligacaop: ' + this.ligacaop)
-        }
+        })
+        grupo.times.forEach(time => {
+          this.calculaPontuacao(time, grupo)
+        })
+        this.pagination.sortBy = 'pos'
+        this.calculaPosicoes(grupo)
+        this.updateOitavas(grupo)
+        this.ligacaop += 1
       },
       salvarPalpites () {
        // console.log(this.grupos)

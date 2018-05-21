@@ -6,6 +6,7 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
+    minhasApostas: null,
     loadedAdmins: [],
     loadedUsuarios: [],
     loadedMeetups: [
@@ -75,6 +76,11 @@ export const store = new Vuex.Store({
     createGrupo (state, payload) {
       state.loadedTimes.push(payload)
     },
+    setMinhasApostas (state, payload) {
+     // console.log('paulo: ')
+     // console.log(payload)
+      state.minhasApostas = payload
+    },
     setUser (state, payload) {
       state.user = payload
     },
@@ -106,6 +112,21 @@ export const store = new Vuex.Store({
             })
           }
           commit('setLoadedMeetups', meetups)
+          commit('setLoading', false)
+        })
+        .catch(
+          (error) => {
+            console.log(error)
+            commit('setLoading', false)
+          }
+        )
+    },
+    loadMinhasApostas ({commit}) {
+      commit('setLoading', true)
+      firebase.database().ref('apostas/' + store.getters.user.id).once('value')
+        .then((data) => {
+          const minhasApostas = {grupos: data.val().grupos, fases: data.val().fases}
+          commit('setMinhasApostas', minhasApostas)
           commit('setLoading', false)
         })
         .catch(
@@ -343,17 +364,29 @@ export const store = new Vuex.Store({
       })
     },
     cadastraUsuario ({commit, getters}, payload) {
-      console.log(payload)
       var usuario = {nomeOriginal: payload.nomeOriginal, addedby: payload.addedby, nome: payload.nome, email: payload.email}
       const id = payload.id
       console.log(payload)
       firebase.database().ref('usuarios/' + id).set(usuario).then((data) => {
-        console.log(data)
+      //  console.log(data)
         /* const key = data.key
          commit('createUsuario', {
           ...usuario,
           id: key
         }) */
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    },
+    cadastraMinhasApostas ({commit, getters}, payload) {
+      var apostas = {grupos: payload.grupos, fases: payload.fases}
+      firebase.database().ref('apostas/' + store.getters.user.id).set(apostas).then((data) => {
+        const key = data.key
+        commit('setMinhasApostas', {
+          ...apostas,
+          id: key
+        })
       })
       .catch((error) => {
         console.log(error)
@@ -521,6 +554,9 @@ export const store = new Vuex.Store({
     },
     loadedFases (state) {
       return state.loadedFases
+    },
+    loadedMinhasApostas (state) {
+      return state.minhasApostas
     },
     featuredMeetups (state, getters) {
       return getters.loadedMeetups.slice(0, 5)
