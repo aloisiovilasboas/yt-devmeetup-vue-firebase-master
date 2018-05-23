@@ -73,6 +73,13 @@ export const store = new Vuex.Store({
     createUsuario (state, payload) {
       state.loadedUsuarios.push(payload)
     },
+    cadastraUsuario (state, payload) {
+      var uindex = state.loadedUsuarios.findIndex((user) => {
+        return (user.id === payload.id)
+      })
+      payload.usuario.id = payload.id
+      state.loadedUsuarios[uindex] = payload.usuario
+    },
     createGrupo (state, payload) {
       state.loadedTimes.push(payload)
     },
@@ -364,18 +371,13 @@ export const store = new Vuex.Store({
       })
     },
     cadastraUsuario ({commit, getters}, payload) {
-      var usuario = {nomeOriginal: payload.nomeOriginal, addedby: payload.addedby, nome: payload.nome, email: payload.email}
+      var usuario = {nomeOriginal: payload.nomeOriginal, addedby: payload.addedby, nome: payload.nome, email: payload.email, pendente: false}
       const id = payload.id
       console.log(payload)
       firebase.database().ref('usuarios/' + id).set(usuario).then((data) => {
       //  console.log(data)
-        /* const key = data.key
-         commit('createUsuario', {
-          ...usuario,
-          id: key
-        }) */
-      })
-      .catch((error) => {
+        commit('cadastraUsuario', {id: id, usuario: usuario})
+      }).catch((error) => {
         console.log(error)
       })
     },
