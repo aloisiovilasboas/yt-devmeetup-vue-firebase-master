@@ -27,7 +27,7 @@
                   <v-flex xs12>
                     <v-text-field
                       name="name"
-                      label="Nome"
+                      label="Nome Completo"
                       id="name"
                       v-model="name"
                       type="text"

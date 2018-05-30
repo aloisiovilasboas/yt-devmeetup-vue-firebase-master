@@ -8,6 +8,7 @@
     class="elevation-1"
   >
     <template slot="items" slot-scope="props">
+      <td class="text-xs-left">{{ props.item.index }}</td>
       <td class="text-xs-left">{{ props.item.nomeOriginal }}</td>
       <td class="text-xs-left">{{ props.item.nome }}</td>
       <td class="text-xs-left">{{ props.item.link }}</td>
@@ -17,6 +18,13 @@
 </v-flex>
 <span style="display: inline-block; margin-top: 50px;" > </span>
 <v-flex xs5 offset-xs2>
+
+  <v-layout row>
+    <div> Usuários Pendentes: </div> <div> <b>{{nroPendentes}}</b></div> 
+  </v-layout>
+    <v-layout row>
+    <div> Usuários Cadastrados: </div> <div><b>{{nroCadastrados}}</b></div> 
+  </v-layout>
   
   <v-layout row>
     
@@ -40,7 +48,10 @@
       return {
         novoUsuario: '',
         grupo: '',
+        nroPendentes: 0,
+        nroCadastrados: 0,
         headers: [
+          {text: 'Nº', value: 'index'},
           {text: 'Nome Original', value: 'nomeOriginal'},
           {text: 'Nome', value: 'nome'},
           {text: 'Link/e-mail', value: 'link'},
@@ -54,17 +65,26 @@
       },
       usuariosCadastrados () {
       },
+      admins () {
+        return this.$store.getters.loadedAdmins
+      },
       usuariosPendentes () {
         var usuarios = this.users
+      //  var admins = this.admins
         usuarios.filter(user => user.pendente === 'true')
+        var index = 1
         usuarios.forEach(user => {
           if (user.pendente) {
+            this.nroPendentes++
             user.situacao = 'Pendente'
             user.link = 'http://bolaoafc2018.firebaseapp.com/cadastre/' + user.id
           } else {
+            this.nroCadastrados++
             user.situacao = 'Cadastrado'
             user.link = user.email
           }
+          user.index = index
+          index++
         })
         return usuarios
       }

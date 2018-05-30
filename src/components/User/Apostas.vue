@@ -206,7 +206,7 @@
             <v-flex xs12 class="text-xs-center text-sm-center">
                       <v-btn v-on:click="salvarPalpites" large dark color="indigo darken-3" >
                        <v-icon>send</v-icon>
-                       <span>  Salvar Palpites </span>
+                       <span>  Enviar Palpites </span>
                        </v-btn>
             </v-flex>
             </v-layout>
@@ -534,6 +534,7 @@
         })
        // console.log(fasesApostas)
         this.$store.dispatch('cadastraMinhasApostas', {grupos: gruposApostas, fases: fasesApostas})
+        this.$router.push('/apostasCadastradas')
       }
     }
   }

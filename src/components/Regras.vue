@@ -47,6 +47,12 @@
             <span style="display: inline-block; margin-top: 20px;" > </span>
             <p class="">Acerto da seleção campeã – 30 pontos</p>
             <span style="display: inline-block; margin-top: 20px;" > </span>
+
+            <h4>Premiação</h4>
+            <span style="display: inline-block; margin-top: 20px;" > </span>
+            <p class="">O vencedor do bolão será aquele que fizer mais pontos e leva todo o valor arrecadado. Em caso de empate, o prêmio será dividido.</p>
+            <span style="display: inline-block; margin-top: 20px;" > </span>
+
             
           </div>
         </v-flex>
