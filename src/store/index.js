@@ -7,6 +7,7 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
   state: {
     minhasApostas: null,
+    loadedApostas: [],
     loadedAdmins: [],
     loadedUsuarios: [],
     loadedMeetups: [
@@ -48,6 +49,9 @@ export const store = new Vuex.Store({
   mutations: {
     setLoadedMeetups (state, payload) {
       state.loadedMeetups = payload
+    },
+    setLoadedApostas (state, payload) {
+      state.loadedApostas = payload
     },
     setLoadedAdmins (state, payload) {
       state.loadedAdmins = payload
@@ -119,6 +123,30 @@ export const store = new Vuex.Store({
             })
           }
           commit('setLoadedMeetups', meetups)
+          commit('setLoading', false)
+        })
+        .catch(
+          (error) => {
+            console.log(error)
+            commit('setLoading', false)
+          }
+        )
+    },
+    loadApostas ({commit}) {
+      commit('setLoading', true)
+      firebase.database().ref('apostas').once('value')
+        .then((data) => {
+          const apostas = []
+          const obj = data.val()
+          for (let key in obj) {
+            apostas.push({
+              id: key,
+              fases: obj[key].fases,
+              grupos: obj[key].grupos,
+              usuarioid: obj[key].usuarioid
+            })
+          }
+          commit('setLoadedApostas', apostas)
           commit('setLoading', false)
         })
         .catch(
@@ -382,7 +410,10 @@ export const store = new Vuex.Store({
       })
     },
     cadastraMinhasApostas ({commit, getters}, payload) {
-      var apostas = {grupos: payload.grupos, fases: payload.fases}
+      var indexUsuario = this.state.loadedUsuarios.findIndex((usuario) => {
+        return (usuario.email === store.getters.user.email)
+      })
+      var apostas = {grupos: payload.grupos, fases: payload.fases, usuarioid: this.state.loadedUsuarios[indexUsuario].id}
       firebase.database().ref('apostas/' + store.getters.user.id).set(apostas).then((data) => {
         const key = data.key
         commit('setMinhasApostas', {
@@ -490,7 +521,7 @@ export const store = new Vuex.Store({
             commit('setLoading', false)
             const newUser = {
               id: user.uid,
-              registeredMeetups: []
+              email: payload.email
             }
             commit('setUser', newUser)
           }
@@ -512,8 +543,9 @@ export const store = new Vuex.Store({
             commit('setLoading', false)
             const newUser = {
               id: user.uid,
-              registeredMeetups: []
+              email: payload.email
             }
+           // console.log(newUser)
             commit('setUser', newUser)
           }
         )
@@ -526,7 +558,8 @@ export const store = new Vuex.Store({
         )
     },
     autoSignIn ({commit}, payload) {
-      commit('setUser', {id: payload.uid, registeredMeetups: []})
+      commit('setUser', {id: payload.uid, email: payload.email})
+     // console.log(this.state.user)
     },
     logout ({commit}) {
       firebase.auth().signOut()
@@ -537,6 +570,9 @@ export const store = new Vuex.Store({
     }
   },
   getters: {
+    loadedApostas (state) {
+      return state.loadedApostas
+    },
     loadedMeetups (state) {
       return state.loadedMeetups.sort((meetupA, meetupB) => {
         return meetupA.date > meetupB.date

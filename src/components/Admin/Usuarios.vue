@@ -1,29 +1,36 @@
 <template>
-<v-layout column wrap fluid>
-<v-flex xs5 offset-xs2>
- <v-data-table
-    :headers="headers"
-    :items="usuariosPendentes"
-    hide-actions
-    class="elevation-1"
-  >
-    <template slot="items" slot-scope="props">
-      <td class="text-xs-left">{{ props.item.index }}</td>
-      <td class="text-xs-left">{{ props.item.nomeOriginal }}</td>
-      <td class="text-xs-left">{{ props.item.nome }}</td>
-      <td class="text-xs-left">{{ props.item.link }}</td>
-      <td class="text-xs-left">{{ props.item.situacao }}</td>
-    </template>
-  </v-data-table>
-</v-flex>
+<v-layout column >
+  <v-layout>
+    <v-flex xs10 offset-xs1 >
+    <v-data-table
+        :headers="headers"
+        :items="usuariosPendentes"
+        hide-actions
+        class="elevation-1"
+      >
+        <template slot="items" slot-scope="props">
+          <td class="text-xs-left">{{ props.item.index }}</td>
+          <td class="text-xs-left">{{ props.item.nomeOriginal }}</td>
+          <td class="text-xs-left">{{ props.item.nome }}</td>
+          <td class="text-xs-left">{{ props.item.link }}</td>
+          <td class="text-xs-left">{{ props.item.situacao }}</td>
+          <td class="text-xs-left">{{ props.item.adicionadopor }}</td>
+        </template>
+      </v-data-table>
+    </v-flex>
+  </v-layout>
 <span style="display: inline-block; margin-top: 50px;" > </span>
-<v-flex xs5 offset-xs2>
+<v-layout>
+<v-flex xs10 offset-xs1>
 
   <v-layout row>
     <div> Usuários Pendentes: </div> <div> <b>{{nroPendentes}}</b></div> 
   </v-layout>
     <v-layout row>
     <div> Usuários Cadastrados: </div> <div><b>{{nroCadastrados}}</b></div> 
+  </v-layout>
+  <v-layout row>
+    <div> Usuários com apostas enviadas: </div> <div><b>{{nroEnviados}}</b></div> 
   </v-layout>
   
   <v-layout row>
@@ -40,28 +47,41 @@
 
 </v-flex>
 </v-layout>
+</v-layout>
 </template>
 
 <script>
   export default {
     data () {
       return {
+        adminsHardCoded: [
+          {id: 'mDriYC0MQ2f8O23o4zDRWqxvmAO2', nome: 'Aloísio'},
+          {id: '0VHPWAJJGbgOWtSG6yv31BDwPSs1', nome: 'Maiara'},
+          {id: 'MI8UmWIIhbMJE4NH1hhLYqp3N6J2', nome: 'Marcelinho'},
+          {id: 'hA0Ahiin6CY6QpjI15vyjwJdMID2', nome: 'Jorginho'},
+          {id: '04DLvyULzhg04d6NXtsPw227CUQ2', nome: 'Marcel'}
+        ],
         novoUsuario: '',
         grupo: '',
         nroPendentes: 0,
         nroCadastrados: 0,
+        nroEnviados: 0,
         headers: [
           {text: 'Nº', value: 'index'},
           {text: 'Nome Original', value: 'nomeOriginal'},
           {text: 'Nome', value: 'nome'},
           {text: 'Link/e-mail', value: 'link'},
-          {text: 'Situação', value: 'situacao'}
+          {text: 'Situação', value: 'situacao'},
+          {text: 'Adicionado por', value: 'adicionadopor'}
         ]
       }
     },
     computed: {
       users () {
         return this.$store.getters.loadedUsuarios
+      },
+      apostas () {
+        return this.$store.getters.loadedApostas
       },
       usuariosCadastrados () {
       },
@@ -79,11 +99,25 @@
             user.situacao = 'Pendente'
             user.link = 'http://bolaoafc2018.firebaseapp.com/cadastre/' + user.id
           } else {
-            this.nroCadastrados++
-            user.situacao = 'Cadastrado'
+            var indexAposta = this.apostas.findIndex((aposta) => {
+              return aposta.usuarioid === user.id
+            })
+            if (indexAposta === -1) {
+              user.situacao = 'Cadastrado'
+              this.nroCadastrados++
+            } else {
+              user.situacao = 'Enviado'
+              this.nroEnviados++
+            }
             user.link = user.email
           }
           user.index = index
+          var indexAdmin = this.adminsHardCoded.findIndex((admin) => {
+            return admin.id === user.addedby
+          })
+          if (this.adminsHardCoded[indexAdmin] !== null && this.adminsHardCoded[indexAdmin] !== undefined) {
+            user.adicionadopor = this.adminsHardCoded[indexAdmin].nome
+          }
           index++
         })
         return usuarios

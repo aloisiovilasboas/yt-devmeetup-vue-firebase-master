@@ -38,5 +38,6 @@ new Vue({
     this.$store.dispatch('loadPartidas')
     this.$store.dispatch('loadFases')
     this.$store.dispatch('loadAdmins')
+    this.$store.dispatch('loadApostas')
   }
 })

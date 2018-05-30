@@ -397,8 +397,8 @@
             partida.selecionado = app.selecionado
             var ntime = partida.selecionado
             if (this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime] !== undefined) {
-              console.log('radio' + indexFase + partida.numero + ntime)
-              console.log(this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime][0])
+             // console.log('radio' + indexFase + partida.numero + ntime)
+             // console.log(this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime][0])
               this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime][0].isActive = true
             }
             var timesel = {id: null, grupo: null, nome: null, imgurl: null}
