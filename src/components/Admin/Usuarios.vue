@@ -14,6 +14,18 @@
           <td class="text-xs-left">{{ props.item.nome }}</td>
           <td class="text-xs-left">{{ props.item.link }}</td>
           <td class="text-xs-left">{{ props.item.situacao }}</td>
+          <td class="text-xs-left">
+           <!-- <v-checkbox
+              v-model="props.item.pago"
+              @click="updatePago(props.item)"
+            ></v-checkbox>
+            -->
+            <input type="checkbox"
+             v-model="props.item.pago"
+             :disabled="props.item.disabled"
+              @change="updatePago(props.item)"
+            >
+          </td>
           <td class="text-xs-left">{{ props.item.adicionadopor }}</td>
         </template>
       </v-data-table>
@@ -44,7 +56,6 @@
                     <v-icon left light>arrow_forward</v-icon>
                     Adiciona Usuario
                   </v-btn>
-
 </v-flex>
 </v-layout>
 </v-layout>
@@ -72,6 +83,7 @@
           {text: 'Nome', value: 'nome'},
           {text: 'Link/e-mail', value: 'link'},
           {text: 'Situação', value: 'situacao'},
+          {text: 'Pago', value: 'pago'},
           {text: 'Adicionado por', value: 'adicionadopor'}
         ]
       }
@@ -80,8 +92,14 @@
       users () {
         return this.$store.getters.loadedUsuarios
       },
+      pagamentos () {
+        return false
+      },
       apostas () {
         return this.$store.getters.loadedApostas
+      },
+      usuarioLogado () {
+        return this.$store.getters.user
       },
       usuariosCadastrados () {
       },
@@ -112,6 +130,11 @@
             user.link = user.email
           }
           user.index = index
+          if (user.addedby === this.usuarioLogado.id) {
+            user.disabled = false
+          } else {
+            user.disabled = true
+          }
           var indexAdmin = this.adminsHardCoded.findIndex((admin) => {
             return admin.id === user.addedby
           })
@@ -124,9 +147,55 @@
       }
     },
     methods: {
+      updatePago (usuario) {
+       // usuario.pago = !usuario.pago
+        console.log(usuario.pago + ' ' + usuario.nomeOriginal)
+        if (usuario.pendente) {
+          this.$store.dispatch('cadastraPagamentoDePendente', {
+            id: usuario.id,
+            nomeOriginal: usuario.nomeOriginal,
+            addedby: usuario.addedby,
+            pendente: usuario.pendente,
+            pago: usuario.pago
+          })
+        } else {
+          this.$store.dispatch('cadastraPagamentoDeCadastrado', {
+            id: usuario.id,
+            nomeOriginal: usuario.nomeOriginal,
+            addedby: usuario.addedby,
+            nome: usuario.nome,
+            email: usuario.email,
+            pendente: usuario.pendente,
+            pago: usuario.pago
+          })
+        }
+      },
       onCreateUsuario () {
         this.$store.dispatch('createUsuario', this.novoUsuario)
         this.$router.push('/Usuarios')
+      },
+      setaNaoPagos () {
+        this.users.forEach(usuario => {
+          if (usuario.pendente) {
+            this.$store.dispatch('cadastraPagamentoDePendente', {
+              id: usuario.id,
+              nomeOriginal: usuario.nomeOriginal,
+              addedby: usuario.addedby,
+              pendente: usuario.pendente,
+              pago: false
+            })
+          } else {
+            this.$store.dispatch('cadastraPagamentoDeCadastrado', {
+              id: usuario.id,
+              nomeOriginal: usuario.nomeOriginal,
+              addedby: usuario.addedby,
+              nome: usuario.nome,
+              email: usuario.email,
+              pendente: usuario.pendente,
+              pago: false
+            })
+          }
+        })
       }
     }
   }

@@ -207,6 +207,7 @@ export const store = new Vuex.Store({
               nome: obj[key].nome,
               email: obj[key].email,
               pendente: obj[key].pendente,
+              pago: obj[key].pago,
               addedby: obj[key].addedby
             })
           }
@@ -400,6 +401,40 @@ export const store = new Vuex.Store({
     },
     cadastraUsuario ({commit, getters}, payload) {
       var usuario = {nomeOriginal: payload.nomeOriginal, addedby: payload.addedby, nome: payload.nome, email: payload.email, pendente: false}
+      const id = payload.id
+      console.log(payload)
+      firebase.database().ref('usuarios/' + id).set(usuario).then((data) => {
+      //  console.log(data)
+        commit('cadastraUsuario', {id: id, usuario: usuario})
+      }).catch((error) => {
+        console.log(error)
+      })
+    },
+    cadastraPagamentoDeCadastrado ({commit, getters}, payload) {
+      var usuario = {
+        nomeOriginal: payload.nomeOriginal,
+        addedby: payload.addedby,
+        nome: payload.nome,
+        email: payload.email,
+        pago: payload.pago,
+        pendente: payload.pendente
+      }
+      const id = payload.id
+      console.log(payload)
+      firebase.database().ref('usuarios/' + id).set(usuario).then((data) => {
+      //  console.log(data)
+        commit('cadastraUsuario', {id: id, usuario: usuario})
+      }).catch((error) => {
+        console.log(error)
+      })
+    },
+    cadastraPagamentoDePendente ({commit, getters}, payload) {
+      var usuario = {
+        nomeOriginal: payload.nomeOriginal,
+        addedby: payload.addedby,
+        pago: payload.pago,
+        pendente: payload.pendente
+      }
       const id = payload.id
       console.log(payload)
       firebase.database().ref('usuarios/' + id).set(usuario).then((data) => {
