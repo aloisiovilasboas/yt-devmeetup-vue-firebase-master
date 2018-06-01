@@ -14,7 +14,7 @@
           <td class="text-xs-left">{{ props.item.nome }}</td>
           <td class="text-xs-left">{{ props.item.link }}</td>
           <td class="text-xs-left">{{ props.item.situacao }}</td>
-          <td class="text-xs-left">
+          <td class="text-xs-center">
            <!-- <v-checkbox
               v-model="props.item.pago"
               @click="updatePago(props.item)"
@@ -27,6 +27,9 @@
             >
           </td>
           <td class="text-xs-left">{{ props.item.adicionadopor }}</td>
+          <td class="text-xs-left">
+            <button v-if="props.item.podeApagar" ><v-icon v-on:click="deleteUsuario(props.item)" left light>delete</v-icon></button>
+          </td>
         </template>
       </v-data-table>
     </v-flex>
@@ -36,15 +39,19 @@
 <v-flex xs10 offset-xs1>
 
   <v-layout row>
-    <div> Usuários Pendentes: </div> <div> <b>{{nroPendentes}}</b></div> 
+    <div> Pendentes: </div> <div> <b>{{nroPendentes}}</b></div> 
   </v-layout>
     <v-layout row>
-    <div> Usuários Cadastrados: </div> <div><b>{{nroCadastrados}}</b></div> 
+    <div> Cadastrados: </div> <div><b>{{nroCadastrados}}</b></div> 
   </v-layout>
   <v-layout row>
-    <div> Usuários com apostas enviadas: </div> <div><b>{{nroEnviados}}</b></div> 
+    <div> Apostas enviadas: </div> <div><b>{{nroEnviados}}</b></div> 
   </v-layout>
-  
+  <v-layout row>
+    <div> Pagos: </div> <div><b>{{nroPagos}}</b></div> 
+  </v-layout>
+
+
   <v-layout row>
     
                   <v-text-field
@@ -65,18 +72,19 @@
   export default {
     data () {
       return {
-        adminsHardCoded: [
+       /*  adminsHardCoded: [
           {id: 'mDriYC0MQ2f8O23o4zDRWqxvmAO2', nome: 'Aloísio'},
           {id: '0VHPWAJJGbgOWtSG6yv31BDwPSs1', nome: 'Maiara'},
           {id: 'MI8UmWIIhbMJE4NH1hhLYqp3N6J2', nome: 'Marcelinho'},
           {id: 'hA0Ahiin6CY6QpjI15vyjwJdMID2', nome: 'Jorginho'},
           {id: '04DLvyULzhg04d6NXtsPw227CUQ2', nome: 'Marcel'}
-        ],
+        ], */
         novoUsuario: '',
         grupo: '',
         nroPendentes: 0,
         nroCadastrados: 0,
         nroEnviados: 0,
+        nroPagos: 0,
         headers: [
           {text: 'Nº', value: 'index'},
           {text: 'Nome Original', value: 'nomeOriginal'},
@@ -84,7 +92,8 @@
           {text: 'Link/e-mail', value: 'link'},
           {text: 'Situação', value: 'situacao'},
           {text: 'Pago', value: 'pago'},
-          {text: 'Adicionado por', value: 'adicionadopor'}
+          {text: 'Adicionado por', value: 'adicionadopor'},
+          {text: '', value: 'apagar'}
         ]
       }
     },
@@ -107,8 +116,12 @@
         return this.$store.getters.loadedAdmins
       },
       usuariosPendentes () {
+        this.nroPendentes = 0
+        this.nroCadastrados = 0
+        this.nroEnviados = 0
+        this.nroPagos = 0
         var usuarios = this.users
-      //  var admins = this.admins
+        var admins = this.admins
         usuarios.filter(user => user.pendente === 'true')
         var index = 1
         usuarios.forEach(user => {
@@ -132,14 +145,23 @@
           user.index = index
           if (user.addedby === this.usuarioLogado.id) {
             user.disabled = false
+            if (user.pendente) {
+              user.podeApagar = true
+            } else {
+              user.podeApagar = false
+            }
           } else {
             user.disabled = true
+            user.podeApagar = false
           }
-          var indexAdmin = this.adminsHardCoded.findIndex((admin) => {
-            return admin.id === user.addedby
+          if (user.pago) {
+            this.nroPagos++
+          }
+          var indexAdmin = admins.findIndex((admin) => {
+            return admin.adminId === user.addedby
           })
-          if (this.adminsHardCoded[indexAdmin] !== null && this.adminsHardCoded[indexAdmin] !== undefined) {
-            user.adicionadopor = this.adminsHardCoded[indexAdmin].nome
+          if (admins[indexAdmin] !== null && admins[indexAdmin] !== undefined) {
+            user.adicionadopor = admins[indexAdmin].nome
           }
           index++
         })
@@ -149,7 +171,7 @@
     methods: {
       updatePago (usuario) {
        // usuario.pago = !usuario.pago
-        console.log(usuario.pago + ' ' + usuario.nomeOriginal)
+      //  console.log(usuario.pago + ' ' + usuario.nomeOriginal)
         if (usuario.pendente) {
           this.$store.dispatch('cadastraPagamentoDePendente', {
             id: usuario.id,
@@ -173,6 +195,9 @@
       onCreateUsuario () {
         this.$store.dispatch('createUsuario', this.novoUsuario)
         this.$router.push('/Usuarios')
+      },
+      deleteUsuario (usuario) {
+        this.$store.dispatch('deleteUsuario', {id: usuario.id})
       },
       setaNaoPagos () {
         this.users.forEach(usuario => {

@@ -26,6 +26,10 @@
                           label="admin id:"
                            v-model="adminid"
                         ></v-text-field>
+                        <v-text-field 
+                          label="nome:"
+                           v-model="adminnome"
+                        ></v-text-field>
                         </v-flex>
                         <v-btn  v-on:click="addAdmin">
                           <v-icon left light>arrow_forward</v-icon>
@@ -50,7 +54,8 @@
   export default {
     data () {
       return {
-        adminid: ''
+        adminid: '',
+        adminnome: ''
       }
     },
     methods: {
@@ -126,7 +131,7 @@
         this.$router.push('/profile')
       } */
       addAdmin () {
-        this.$store.dispatch('createAdmin', this.adminid)
+        this.$store.dispatch('createAdmin', {id: this.adminid, nome: this.adminnome})
       }
     }
   }

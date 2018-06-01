@@ -84,6 +84,14 @@ export const store = new Vuex.Store({
       payload.usuario.id = payload.id
       state.loadedUsuarios[uindex] = payload.usuario
     },
+    deleteUsuario (state, payload) {
+      var uindex = state.loadedUsuarios.findIndex((user) => {
+        return (user.id === payload.id)
+      })
+      if (uindex > -1) {
+        state.loadedUsuarios.splice(uindex, 1)
+      }
+    },
     createGrupo (state, payload) {
       state.loadedTimes.push(payload)
     },
@@ -181,6 +189,7 @@ export const store = new Vuex.Store({
             admins.push({
               id: key,
               adminId: obj[key].id,
+              nome: obj[key].nome,
               addedby: obj[key].addedby
             })
           }
@@ -370,8 +379,9 @@ export const store = new Vuex.Store({
       // Reach out to firebase and store it
     },
     createAdmin ({commit, getters}, payload) {
-      const adminid = payload
-      const newAdmin = {id: adminid, addedby: store.getters.user.id}
+      const adminid = payload.id
+      const adminnome = payload.nome
+      const newAdmin = {id: adminid, nome: adminnome, addedby: store.getters.user.id}
       firebase.database().ref('admins').push(newAdmin)
       .then((data) => {
         const key = data.key
@@ -402,7 +412,7 @@ export const store = new Vuex.Store({
     cadastraUsuario ({commit, getters}, payload) {
       var usuario = {nomeOriginal: payload.nomeOriginal, addedby: payload.addedby, nome: payload.nome, email: payload.email, pendente: false}
       const id = payload.id
-      console.log(payload)
+     // console.log(payload)
       firebase.database().ref('usuarios/' + id).set(usuario).then((data) => {
       //  console.log(data)
         commit('cadastraUsuario', {id: id, usuario: usuario})
@@ -420,10 +430,20 @@ export const store = new Vuex.Store({
         pendente: payload.pendente
       }
       const id = payload.id
-      console.log(payload)
+     // console.log(payload)
       firebase.database().ref('usuarios/' + id).set(usuario).then((data) => {
       //  console.log(data)
         commit('cadastraUsuario', {id: id, usuario: usuario})
+      }).catch((error) => {
+        console.log(error)
+      })
+    },
+    deleteUsuario ({commit, getters}, payload) {
+      const id = payload.id
+     // console.log(payload)
+      firebase.database().ref('usuarios/' + id).set(null).then((data) => {
+      //  console.log(data)
+        commit('deleteUsuario', {id: id})
       }).catch((error) => {
         console.log(error)
       })
@@ -436,7 +456,7 @@ export const store = new Vuex.Store({
         pendente: payload.pendente
       }
       const id = payload.id
-      console.log(payload)
+     // console.log(payload)
       firebase.database().ref('usuarios/' + id).set(usuario).then((data) => {
       //  console.log(data)
         commit('cadastraUsuario', {id: id, usuario: usuario})
