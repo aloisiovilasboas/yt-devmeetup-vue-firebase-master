@@ -6,6 +6,7 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
+    gabarito: null,
     minhasApostas: null,
     loadedApostas: [],
     loadedAdmins: [],
@@ -100,6 +101,11 @@ export const store = new Vuex.Store({
      // console.log(payload)
       state.minhasApostas = payload
     },
+    setaGabarito (state, payload) {
+      // console.log('paulo: ')
+      // console.log(payload)
+      state.gabarito = payload
+    },
     setUser (state, payload) {
       state.user = payload
     },
@@ -170,6 +176,21 @@ export const store = new Vuex.Store({
         .then((data) => {
           const minhasApostas = {grupos: data.val().grupos, fases: data.val().fases}
           commit('setMinhasApostas', minhasApostas)
+          commit('setLoading', false)
+        })
+        .catch(
+          (error) => {
+            console.log(error)
+            commit('setLoading', false)
+          }
+        )
+    },
+    loadGabarito ({commit}) {
+      commit('setLoading', true)
+      firebase.database().ref('gabarito').once('value')
+        .then((data) => {
+          const gabarito = {grupos: data.val().grupos, fases: data.val().fases}
+          commit('setaGabarito', gabarito)
           commit('setLoading', false)
         })
         .catch(
@@ -480,6 +501,19 @@ export const store = new Vuex.Store({
         console.log(error)
       })
     },
+    cadastraGabarito ({commit, getters}, payload) {
+      var gabarito = {grupos: payload.grupos, fases: payload.fases, adminid: store.getters.user.id}
+      firebase.database().ref('gabarito').set(gabarito).then((data) => {
+        const key = data.key
+        commit('setaGabarito', {
+          ...gabarito,
+          id: key
+        })
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    },
     createPartidasSegundaFase ({commit, getters}, payload) {
       const fases = payload
       fases.forEach(fase => {
@@ -650,6 +684,9 @@ export const store = new Vuex.Store({
     },
     loadedMinhasApostas (state) {
       return state.minhasApostas
+    },
+    loadedGabarito (state) {
+      return state.gabarito
     },
     featuredMeetups (state, getters) {
       return getters.loadedMeetups.slice(0, 5)

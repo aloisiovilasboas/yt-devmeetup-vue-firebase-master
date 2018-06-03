@@ -40,13 +40,32 @@
 
                    <v-card class="margin" color="grey lighten-3">  
                     <v-flex > 
+                    <v-btn  :to="'/Ranking'">
+                      <v-icon left light>arrow_forward</v-icon>
+                        Ranking
+                    </v-btn>
+                	  <v-btn  :to="'/Gabarito'">
+                      <v-icon left light>arrow_forward</v-icon>
+                        Gabarito
+                     </v-btn>
+                    </v-flex>
+                    </v-card>
+
+                    <v-card class="margin" color="grey lighten-3">  
+                    <v-flex > 
                 	  <v-btn  :to="'/Usuarios'">
                       <v-icon left light>arrow_forward</v-icon>
                         Usuarios
                      </v-btn>
                     </v-flex>
                     </v-card>
+
                   </v-flex>
+
+                  
+
+
+
   </div>  
 </template>
 

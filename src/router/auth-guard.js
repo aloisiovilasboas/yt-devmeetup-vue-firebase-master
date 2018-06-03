@@ -2,7 +2,7 @@ import {store} from '../store'
 
 export default (to, from, next) => {
   if (store.getters.user) {
-    if (name === 'Admin' || name === 'CreateGrupo' || name === 'Usuarios') {
+    if (name === 'Admin' || name === 'Usuarios' || name === 'Gabarito') {
       var admins = this.$store.getters.loadedAdmins
       var user = this.$store.getters.user
       var isAdmin = false

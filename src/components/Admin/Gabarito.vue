@@ -201,7 +201,7 @@
                 </v-layout>
               </v-container>
             </v-card>
-            <v-container fluid v-if="(indexFase === 3 && campeao.id !== null)" >
+            <v-container v-if="(indexFase === 3)" fluid >
                 <v-layout row>
             <v-flex xs12 class="text-xs-center text-sm-center">
                       <v-btn v-on:click="salvarPalpites" large dark color="indigo darken-3" >
@@ -222,6 +222,11 @@
 
 <script>
   export default {
+    beforeCreate () {
+      if (this.$store.getters.loadedGabarito === null) {
+        this.$store.dispatch('loadGabarito')
+      }
+    },
     data () {
       return {
         ex7: 'red',
@@ -245,6 +250,18 @@
       }
     },
     computed: {
+      gabarito () {
+        return this.$store.getters.loadedGabarito
+      },
+      minhasApostasGrupos () {
+       // console.log('apgrupos:')
+       // console.log(this.$store.getters.loadedMinhasApostas.grupos)
+        return this.gabarito.grupos
+      },
+      minhasApostasFases () {
+     //   console.log(this.$store.getters.loadedMinhasApostas.fases)
+        return this.gabarito.fases
+      },
       userIsAuthenticated () {
         return this.$store.getters.user !== null && this.$store.getters.user !== undefined
       },
@@ -534,8 +551,8 @@
           fasesApostas.push(faseAposta)
         })
        // console.log(fasesApostas)
-        this.$store.dispatch('cadastraMinhasApostas', {grupos: gruposApostas, fases: fasesApostas})
-        this.$router.push('/apostasCadastradas')
+        this.$store.dispatch('cadastraGabarito', {grupos: gruposApostas, fases: fasesApostas})
+        this.$router.push('/Ranking')
       }
     }
   }

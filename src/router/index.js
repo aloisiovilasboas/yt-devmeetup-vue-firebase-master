@@ -3,18 +3,15 @@ import Router from 'vue-router'
 import Home from '@/components/Home'
 import Regras from '@/components/Regras'
 import Sobre from '@/components/Sobre'
-import Meetups from '@/components/Meetup/Meetups'
-import CreateMeetup from '@/components/Meetup/CreateMeetup'
-import Profile from '@/components/User/Profile'
+import Perfil from '@/components/User/Perfil'
+import Ranking from '@/components/User/Ranking'
 import Apostas from '@/components/User/Apostas'
 import ApostasCadastradas from '@/components/User/ApostasCadastradas'
 import Admin from '@/components/Admin/Admin'
 import Usuarios from '@/components/Admin/Usuarios'
 import Cadastre from '@/components/Admin/Cadastre'
-import Signup from '@/components/User/Signup'
+import Gabarito from '@/components/Admin/Gabarito'
 import Signin from '@/components/User/Signin'
-import Meetup from '@/components/Meetup/Meetup'
-import CreateGrupo from '@/components/Admin/CreateGrupo'
 import AuthGuard from './auth-guard'
 
 Vue.use(Router)
@@ -54,21 +51,15 @@ export default new Router({
       beforeEnter: AuthGuard
     },
     {
-      path: '/profile',
-      name: 'Profile',
-      component: Profile,
-      beforeEnter: AuthGuard
-    },
-    {
-      path: '/CreateGrupo',
-      name: 'CreateGrupo',
-      component: CreateGrupo,
-      beforeEnter: AuthGuard
-    },
-    {
       path: '/Usuarios',
       name: 'Usuarios',
       component: Usuarios,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/Gabarito',
+      name: 'Gabarito',
+      component: Gabarito,
       beforeEnter: AuthGuard
     },
     {
@@ -77,32 +68,21 @@ export default new Router({
       component: Signin
     },
     {
-      path: '/signup',
-      name: 'Signup',
-      component: Signup
-    },
-    {
-      path: '/meetups',
-      name: 'Meetups',
-      component: Meetups
-    },
-    {
-      path: '/meetup/new',
-      name: 'CreateMeetup',
-      component: CreateMeetup,
-      beforeEnter: AuthGuard
-    },
-    {
-      path: '/meetups/:id',
-      name: 'Meetup',
-      props: true,
-      component: Meetup
+      path: '/ranking',
+      name: 'Ranking',
+      component: Ranking
     },
     {
       path: '/cadastre/:id',
       name: 'Cadastre',
       props: true,
       component: Cadastre
+    },
+    {
+      path: '/perfil/:id',
+      name: 'Perfil',
+      props: true,
+      component: Perfil
     }
   ],
   mode: 'history'

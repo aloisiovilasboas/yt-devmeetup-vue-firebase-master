@@ -53,6 +53,7 @@
                       id="password"
                       v-model="password"
                       type="password"
+                      :rules="[seisDigitos]"
                       required></v-text-field>
                   </v-flex>
                 </v-layout>
@@ -69,7 +70,7 @@
                 </v-layout>
                 <v-layout row>
                   <v-flex xs12>
-                    <v-btn type="submit" :disabled="loading" :loading="loading">
+                    <v-btn type="submit" :disabled="!loading && !enableCadastre" :loading="loading">
                       Cadastre-se
                        <span slot="loader" class="custom-loader">
                         <v-icon light>cached</v-icon>
@@ -99,7 +100,13 @@
     },
     computed: {
       comparePasswords () {
-        return this.password !== this.confirmPassword ? 'As senhas não conferem' : ''
+        return this.password === this.confirmPassword ? true : 'As senhas não conferem'
+      },
+      seisDigitos () {
+        return this.password.length >= 6 ? true : 'A senha deve ter pelo menos 6 dígitos'
+      },
+      enableCadastre () {
+        return this.password === this.confirmPassword && this.password.length >= 6
       },
       user () {
         return this.$store.getters.user
