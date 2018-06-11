@@ -62,12 +62,13 @@
                           :disabled="!userIsAuthenticated"
                             v-model="partida.time1gols"
                             @change="update(1, indexG, indexP)"
-                            type="number"
+                            mask="##"
                             class ="input1"
                             single-line
                           ></v-text-field>
                     </v-layout>
                  </v-layout>
+                 <!-- type="number" -->
               </v-flex>
               <v-flex  xs2 md1 align-end justify-end align-content-end >
               <div class="xizinho"><p class="xizinho">x</p></div>
@@ -82,7 +83,7 @@
                           <v-text-field
                             :disabled="!userIsAuthenticated"
                             class = "input1"
-                            type="number"
+                            :mask="'##'"
                             v-model="partida.time2gols"
                             @change="update(2, indexG, indexP)"
                             :pagination.sync="pagination"
@@ -484,32 +485,28 @@
         var partida = grupo.partidas[indexP]
         var time1 = partida.time1
         var time2 = partida.time2
-        var b1 = (true)
-        var b2 = (true)
-        if (b1 || b2) {
-          this.calculaPontuacao(time1, grupo)
-          this.calculaPontuacao(time2, grupo)
-          this.calculaPosicoes(grupo)
-          this.pagination.sortBy = 'name'
-          this.pagination.sortBy = 'pos'
-          // calcula completude
-          var completo = true
-          for (let i = 0; (i < grupo.times.length && completo); i++) {
-            const time = grupo.times[i]
-            if (time.v + time.e + time.d !== 3) {
-              completo = false
-            }
+        this.calculaPontuacao(time1, grupo)
+        this.calculaPontuacao(time2, grupo)
+        this.calculaPosicoes(grupo)
+        this.pagination.sortBy = 'name'
+        this.pagination.sortBy = 'pos'
+        // calcula completude
+        var completo = true
+        for (let i = 0; (i < grupo.times.length && completo); i++) {
+          const time = grupo.times[i]
+          if (time.v + time.e + time.d !== 3) {
+            completo = false
           }
-          if (completo) {
-            console.log('Completo!!!!!!')
-            this.desmarcaOitavas(grupo)
-            this.updateOitavas(grupo)
-          } else {
-            this.desmarcaOitavas(grupo)
-          }
-          this.ligacaop += 1
-         // console.log('ligacaop: ' + this.ligacaop)
         }
+        if (completo) {
+          console.log('Completo!!!!!!')
+          this.desmarcaOitavas(grupo)
+          this.updateOitavas(grupo)
+        } else {
+          this.desmarcaOitavas(grupo)
+        }
+        this.ligacaop += 1
+        // console.log('ligacaop: ' + this.ligacaop)
       },
       salvarPalpites () {
        // console.log(this.grupos)
