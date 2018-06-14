@@ -48,6 +48,20 @@
                       <v-icon left light>arrow_forward</v-icon>
                         Gabarito
                      </v-btn>
+                	  <v-btn  :to="'/Resultados'">
+                      <v-icon left light>arrow_forward</v-icon>
+                        Resultados
+                     </v-btn>
+                     <v-btn  v-on:click="geraRanking">
+                          <v-icon left light>arrow_forward</v-icon>
+                          Gera Ranking
+                        </v-btn>
+                        <v-btn  v-on:click="SalvaApostas">
+                          <v-icon left light>arrow_forward</v-icon>
+                          Salva Apostas
+                        </v-btn>
+
+                     
                     </v-flex>
                     </v-card>
 
@@ -151,6 +165,12 @@
       } */
       addAdmin () {
         this.$store.dispatch('createAdmin', {id: this.adminid, nome: this.adminnome})
+      },
+      geraRanking () {
+        return
+      },
+      SalvaApostas () {
+        this.$store.dispatch('salvaApostas', {})
       }
     }
   }

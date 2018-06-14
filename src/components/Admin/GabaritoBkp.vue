@@ -1,14 +1,9 @@
 <template>
   <v-container fluid grid-list-md text-xs-center :id="'container'">
 
-<v-alert :value="!userIsAuthenticated" type="warning">
+<v-alert :value="!userIsAuthenticated" type="info">
       Você ainda não está cadastrado. Procure um dos organizadores para saber como participar. Boa sorte!
     </v-alert>
-
-<v-alert v-if="nomeDeUsuario !== null" :value="userIsAuthenticated" type="info">
-   Faça suas apostas, {{nomeDeUsuario}}.
-</v-alert>
-
 
 <v-tabs
     dark
@@ -67,13 +62,12 @@
                           :disabled="!userIsAuthenticated"
                             v-model="partida.time1gols"
                             @change="update(1, indexG, indexP)"
-                            mask="##"
+                            type="number"
                             class ="input1"
                             single-line
                           ></v-text-field>
                     </v-layout>
                  </v-layout>
-                 <!-- type="number" -->
               </v-flex>
               <v-flex  xs2 md1 align-end justify-end align-content-end >
               <div class="xizinho"><p class="xizinho">x</p></div>
@@ -88,7 +82,7 @@
                           <v-text-field
                             :disabled="!userIsAuthenticated"
                             class = "input1"
-                            :mask="'##'"
+                            type="number"
                             v-model="partida.time2gols"
                             @change="update(2, indexG, indexP)"
                             :pagination.sync="pagination"
@@ -207,7 +201,7 @@
                 </v-layout>
               </v-container>
             </v-card>
-            <v-container fluid v-if="(indexFase === 3 && campeao.id !== null)" >
+            <v-container v-if="(indexFase === 3)" fluid >
                 <v-layout row>
             <v-flex xs12 class="text-xs-center text-sm-center">
                       <v-btn v-on:click="salvarPalpites" large dark color="indigo darken-3" >
@@ -228,6 +222,11 @@
 
 <script>
   export default {
+    beforeCreate () {
+      if (this.$store.getters.loadedGabarito === null) {
+        this.$store.dispatch('loadGabarito')
+      }
+    },
     data () {
       return {
         ex7: 'red',
@@ -251,22 +250,20 @@
       }
     },
     computed: {
+      gabarito () {
+        return this.$store.getters.loadedGabarito
+      },
+      minhasApostasGrupos () {
+       // console.log('apgrupos:')
+       // console.log(this.$store.getters.loadedMinhasApostas.grupos)
+        return this.gabarito.grupos
+      },
+      minhasApostasFases () {
+     //   console.log(this.$store.getters.loadedMinhasApostas.fases)
+        return this.gabarito.fases
+      },
       userIsAuthenticated () {
         return this.$store.getters.user !== null && this.$store.getters.user !== undefined
-      },
-      usuarios () {
-        return this.$store.getters.loadedUsuarios
-      },
-      nomeDeUsuario () {
-        var usuarios = this.usuarios
-        var uindex = usuarios.findIndex((u) => {
-          return (u.email === this.$store.getters.user.email)
-        })
-        if (usuarios[uindex] === undefined) {
-          return ''
-        } else {
-          return usuarios[uindex].nome
-        }
       },
       times () {
         return this.$store.getters.loadedTimes
@@ -504,28 +501,32 @@
         var partida = grupo.partidas[indexP]
         var time1 = partida.time1
         var time2 = partida.time2
-        this.calculaPontuacao(time1, grupo)
-        this.calculaPontuacao(time2, grupo)
-        this.calculaPosicoes(grupo)
-        this.pagination.sortBy = 'name'
-        this.pagination.sortBy = 'pos'
-        // calcula completude
-        var completo = true
-        for (let i = 0; (i < grupo.times.length && completo); i++) {
-          const time = grupo.times[i]
-          if (time.v + time.e + time.d !== 3) {
-            completo = false
+        var b1 = (true)
+        var b2 = (true)
+        if (b1 || b2) {
+          this.calculaPontuacao(time1, grupo)
+          this.calculaPontuacao(time2, grupo)
+          this.calculaPosicoes(grupo)
+          this.pagination.sortBy = 'name'
+          this.pagination.sortBy = 'pos'
+          // calcula completude
+          var completo = true
+          for (let i = 0; (i < grupo.times.length && completo); i++) {
+            const time = grupo.times[i]
+            if (time.v + time.e + time.d !== 3) {
+              completo = false
+            }
           }
+          if (completo) {
+            console.log('Completo!!!!!!')
+            this.desmarcaOitavas(grupo)
+            this.updateOitavas(grupo)
+          } else {
+            this.desmarcaOitavas(grupo)
+          }
+          this.ligacaop += 1
+         // console.log('ligacaop: ' + this.ligacaop)
         }
-        if (completo) {
-          console.log('Completo!!!!!!')
-          this.desmarcaOitavas(grupo)
-          this.updateOitavas(grupo)
-        } else {
-          this.desmarcaOitavas(grupo)
-        }
-        this.ligacaop += 1
-        // console.log('ligacaop: ' + this.ligacaop)
       },
       salvarPalpites () {
        // console.log(this.grupos)
@@ -550,8 +551,8 @@
           fasesApostas.push(faseAposta)
         })
        // console.log(fasesApostas)
-        this.$store.dispatch('cadastraMinhasApostas', {grupos: gruposApostas, fases: fasesApostas})
-        this.$router.push('/apostasCadastradas')
+        this.$store.dispatch('cadastraGabarito', {grupos: gruposApostas, fases: fasesApostas})
+        this.$router.push('/Ranking')
       }
     }
   }
@@ -634,3 +635,5 @@ div.subs2 {
 }
 
 </style>
+
+ :pagination.sync="pagination"

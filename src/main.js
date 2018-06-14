@@ -38,5 +38,7 @@ new Vue({
     this.$store.dispatch('loadFases')
     this.$store.dispatch('loadAdmins')
     this.$store.dispatch('loadApostas')
+    this.$store.dispatch('loadApostasSalvas')
+    this.$store.dispatch('loadGabarito')
   }
 })

@@ -9,6 +9,7 @@ export const store = new Vuex.Store({
     gabarito: null,
     minhasApostas: null,
     loadedApostas: [],
+    loadedApostasSalvas: [],
     loadedAdmins: [],
     loadedUsuarios: [],
     loadedMeetups: [
@@ -53,6 +54,9 @@ export const store = new Vuex.Store({
     },
     setLoadedApostas (state, payload) {
       state.loadedApostas = payload
+    },
+    setLoadedApostasSalvas (state, payload) {
+      state.loadedApostasSalvas = payload
     },
     setLoadedAdmins (state, payload) {
       state.loadedAdmins = payload
@@ -170,6 +174,30 @@ export const store = new Vuex.Store({
           }
         )
     },
+    loadApostasSalvas ({commit}) {
+      commit('setLoading', true)
+      firebase.database().ref('apostasSalvas').once('value')
+        .then((data) => {
+          const apostas = []
+          const obj = data.val()
+          for (let key in obj) {
+            apostas.push({
+              id: key,
+              fases: obj[key].fases,
+              grupos: obj[key].grupos,
+              usuarioid: obj[key].usuarioid
+            })
+          }
+          commit('setLoadedApostasSalvas', apostas)
+          commit('setLoading', false)
+        })
+        .catch(
+          (error) => {
+            console.log(error)
+            commit('setLoading', false)
+          }
+        )
+    },
     loadMinhasApostas ({commit}) {
       commit('setLoading', true)
       firebase.database().ref('apostas/' + store.getters.user.id).once('value')
@@ -189,7 +217,7 @@ export const store = new Vuex.Store({
       commit('setLoading', true)
       firebase.database().ref('gabarito').once('value')
         .then((data) => {
-          const gabarito = {grupos: data.val().grupos, fases: data.val().fases}
+          const gabarito = {grupos: data.val().grupos, fases: data.val().fases, ultimojogoT1: data.val().ultimojogoT1, ultimojogoT2: data.val().ultimojogoT2}
           commit('setaGabarito', gabarito)
           commit('setLoading', false)
         })
@@ -501,13 +529,38 @@ export const store = new Vuex.Store({
         console.log(error)
       })
     },
+    salvaApostas ({commit, getters}, payload) {
+      firebase.database().ref('apostas').once('value')
+        .then((data) => {
+          const apostas = []
+          const obj = data.val()
+          for (let key in obj) {
+            apostas[key] = {
+              fases: obj[key].fases,
+              grupos: obj[key].grupos,
+              usuarioid: obj[key].usuarioid
+            }
+          }
+          firebase.database().ref('apostasSalvas').set(apostas).then((data) => {
+            console.log(data)
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+        })
+        .catch(
+          (error) => {
+            console.log(error)
+            commit('setLoading', false)
+          }
+        )
+    },
     cadastraGabarito ({commit, getters}, payload) {
-      var gabarito = {grupos: payload.grupos, fases: payload.fases, adminid: store.getters.user.id}
+      var gabarito = {grupos: payload.grupos, fases: payload.fases, ultimojogoT1: payload.ultimojogoT1, ultimojogoT2: payload.ultimojogoT2, adminid: store.getters.user.id}
       firebase.database().ref('gabarito').set(gabarito).then((data) => {
-        const key = data.key
+        console.log(data)
         commit('setaGabarito', {
-          ...gabarito,
-          id: key
+          ...gabarito
         })
       })
       .catch((error) => {

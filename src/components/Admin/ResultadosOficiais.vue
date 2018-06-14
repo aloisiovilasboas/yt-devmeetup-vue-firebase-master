@@ -1,218 +1,261 @@
 <template>
-  <v-container v-if = "(apostasUsuario !== null && apostasUsuario !== undefined) && (usuarios !== null && usuarios !== undefined)  " fluid grid-list-md text-xs-center :id="'container'">
-    <div class="display-1 nometitulo" >{{usuarioNome}}</div>
-    <v-tabs
-        dark
-        color="red darken-2"
-        show-arrows
+  <v-container v-if = "$store.getters.loadedMinhasApostas !== null" fluid grid-list-md text-xs-center :id="'container'">
+    <div>
+      <v-card>
+      <v-container
+        fluid
+        style="min-height: 0;"
+        grid-list-lg
       >
-        <v-tabs-slider color="amber lighten-3"></v-tabs-slider>
-        <v-tab
-          v-for="grupo in grupos"
-          :key="grupo.l"
-          :href="'#grupo-' + grupo.l"
-        >
-        <v-badge left overlap color="red" :value="false">
-          <span slot="badge">!</span>
-          Grupo {{ grupo.l }}
-        </v-badge>
-        </v-tab>
-        
-        <v-tab
-          v-for="fase in fases"
-          :key="fase.id"
-          :href="'#' + fase.id"
-        >
-        <v-badge left overlap color="red" :value="false">
-          <span slot="badge">!</span>
-          {{ fase.fase }}
-        </v-badge>
-        </v-tab>
-
-        <v-tabs-items>
-          <v-tab-item
-            v-for="grupo in grupos"
-            :key="grupo.l"
-            :id="'grupo-' + grupo.l">
-          
-            <!-- <h1 v-for="partida in grupo.partidas" :key="partida.id" >{{partida.time1nome}}</h1>-->
-            <span style="display: inline-block; margin-top: 20px;" > </span>
-            <v-layout v-for="partida in grupo.partidas" :key="partida.id" column>
-              <v-layout fluid wrap row align-items justify-center >
-                  <v-flex xs4 sm2 lg1 >
-                    <v-layout row align-items align-center coluna1 justify-space-between>
-                        <v-avatar :size="20" :tile="true">
-                            <img :src="partida.time1.imgurl">
-                        </v-avatar>
-                        <div  class="text-xs-right"> {{partida.time1.sigla}}</div>
-                        
-                        <v-layout class = "input1layout">
-                          <div class="subheading"> {{partida.time1gols}} </div>
-                        <!--      <v-text-field
-                                v-model="partida.time1gols"
-                                @change="update(1, indexG, indexP)"
-                                type="number"
-                                class ="input1"
-                                single-line
-                              ></v-text-field> -->
-                        </v-layout> 
-                    </v-layout>
-                  </v-flex>
-                  <v-flex  xs2 md1 align-end justify-end align-content-end >
-                  <div ><p>x</p></div>
-                  </v-flex>
-                  <v-flex xs4 sm2 lg1>     
-                    <v-layout row align-center reverse coluna1 justify-space-between>
-                        <v-avatar :size="20" :tile="true">
-                            <img :src="partida.time2.imgurl">
-                        </v-avatar>
-                        <div  class="text-xs-right"> {{partida.time2.sigla}}</div>
-                        <v-layout class = "input1layout">
-                          <div class = "subheading "> {{partida.time2gols}} </div>
-                          <!--   <v-text-field
-                                class = "input1"
-                                type="number"
-                                v-model="partida.time2gols"
-                                @change="update(2, indexG, indexP)"
-                                :pagination.sync="pagination"
-                                hide-actions
-                                single-line
-                              ></v-text-field> -->
-                        </v-layout>
-                    </v-layout>
-                </v-flex>         
-              </v-layout>
-              <v-layout fluid wrap row align-items justify-center >
-                <p class="hora">{{partida.data +' - '+partida.hora}}</p>
-              </v-layout>
-            </v-layout> 
-
-            <h1>{{ligacaop}}</h1>   
-
-            <v-data-table
-              :headers="headers"
-              :items="grupo.times"
-              :pagination.sync="pagination"
-              :hide-actions="true"
-              class="elevation-1"
-              item-key="bandeira"
-            >
-              <template slot="items" slot-scope="props">
-                  <td class="text-xs-right"  :id ="'pos'+ props.item.pos" >{{props.item.pos}}</td>
-                  <td class="text-xs-center">
-                    <v-avatar :tile="true" >
-                      <img :src= "props.item.imgurl" alt="avatar">
-                    </v-avatar></td>	
-                  <td class="text-xs-center">{{props.item.nome }}</td>
-                  <td class="text-xs-right">{{props.item.p}}</td>
-                  <td class="text-xs-right">{{props.item.v}}</td>
-                  <td class="text-xs-right">{{props.item.e}}</td>
-                  <td class="text-xs-right">{{props.item.d}}</td>
-                  <td class="text-xs-right">{{props.item.gp}}</td>
-                  <td class="text-xs-right">{{props.item.gc}}</td>
-                  <td class="text-xs-right">{{props.item.sg}}</td>
-              </template>
-            </v-data-table>
-          </v-tab-item>
-          <v-tab-item v-for="(fase, indexFase) in fases" :key="fase.id"
-            :id="fase.id">
-            <v-layout row wrap v-for="(partida, indexPartida) in fase.partidas" :key="partida.titulo">
-              <v-flex xs12 sm10 md8 offset-sm1 offset-md2>
-                <v-card class="margin" color="grey lighten-3">
-                  <v-container fluid>
-                    <v-layout row>
-                      <v-flex wrap sm 9>
-                      <v-radio-group column :disabled="(partida.time1.id === null || partida.time2.id === null )" :v-model="partida.selecionado" >
-                        <v-layout row wrap >
-                          <v-flex xs2 sm1 wrap >
-                            <v-avatar v-if="(partida.time1.imgurl !== null)" class="avatarflex" :size="24" :tile="true">
-                              <img :src="partida.time1.imgurl">
-                            </v-avatar>
-                          </v-flex>
-                          <v-flex xs7 >
-                            <v-radio
-                            :ref="'radio' +indexFase+indexPartida+1"
-                            :disabled="true"
-                              @change="updateRadios(fases,indexFase,partida,1)"
-                              :label="partida.time1.nome"
-                              color="indigo darken_4"
-                              :value="partida.time1"
-                              :isActive="true"
-                            ></v-radio>
-                          </v-flex>
-                        </v-layout>
-                        <v-layout row wrap >
-                          <v-flex xs2 sm1 >
-                            <v-avatar v-if="(partida.time2.imgurl !== null)" class="avatarflex" :size="24" :tile="true">
-                              <img :src="partida.time2.imgurl">
-                            </v-avatar>
-                          </v-flex>
-                          <v-flex xs7 >
-                            <v-radio
-                            :ref="'radio' +indexFase+indexPartida+2"
-                            :disabled="true"
-                              @change="updateRadios(fases,indexFase,partida,2)"
-                              :label="partida.time2.nome"
-                              color="indigo darken_4"
-                              :value="partida.time2"
-                            ></v-radio>
-                          </v-flex>
-                        </v-layout>
-                      </v-radio-group>
-                      </v-flex>
-                      <v-flex align-center sm1 class ="subs">
-                        
-                            <div v-if="( indexFase !== 3 )" class="subs2">
-                                <h5 >{{fase.fase + ' ' + partida.numero}}</h5>
-                              <div>{{ partida.data +' '+ partida.hora}}</div>
-                            </div>
-                            <div v-else class="subs2">
-                                <h5 >{{fase.fase}}</h5>
-                              <div>{{ partida.data +' '+ partida.hora}}</div>
-                            </div>                       
-                          
-                      </v-flex>
-                    </v-layout>
-                  </v-container>
-                </v-card>
-
-                <v-card v-if="(indexFase === 3)" class="margin" dark color="gray darken-4">
-                  <v-container fluid  >
-                    <v-layout row>
-                          <v-flex  >
-                            <h3 class="headline">Campeão</h3>
-                            <h3 class="title">{{campeao.nome}}</h3>
-                            <v-avatar class="avatarflex" :size="24" :tile="true">
-                              <img :src="campeao.imgurl">
-                            </v-avatar>
-                          </v-flex>
-                          
-                    </v-layout>
-                  </v-container>
-                </v-card>
+      <v-layout row wrap>
+          <v-flex xs12>
+            <v-card color="blue-grey darken-4" class="white--text">
+              <v-container fluid grid-list-lg>
+             
+                <div class="headline">Último jogo:</div>
+              </v-container>
+              <v-container fluid grid-list-lg>
+                <div>
+       <v-layout fluid wrap row align-items justify-center >
+               <v-flex xs4 sm2 lg1 >
+                 <v-layout row align-items align-center coluna1 justify-space-between>
+                    <v-avatar :size="40" :tile="true">
+                        <img :src="ultimoJogot1.imgurl">
+                    </v-avatar>
+                    <div  class="text-xs-right subheading"> {{ultimoJogot1.sigla}}</div>
+                 </v-layout>
               </v-flex>
-            </v-layout>
-          </v-tab-item>
-        </v-tabs-items>
+              <v-flex  xs2 md1 align-end justify-end align-content-end >
+              <div ><p>x</p></div>
+              </v-flex>
+              <v-flex xs4 sm2 lg1>     
+                 <v-layout row align-center reverse coluna1 justify-space-between>
+                     <v-avatar :size="40" :tile="true">
+                         <img :src="ultimoJogot2.imgurl">
+                     </v-avatar>
+                    <div  class="text-xs-right subheading"> {{ultimoJogot2.sigla}}</div>
+                 </v-layout>
+            </v-flex>         
+          </v-layout>
+    </div>
+             
+              </v-container>
+            </v-card>        
+          </v-flex>
+      </v-layout>
+      </v-container>
+      </v-card>
+
+      
+    </div>
+<v-tabs
+    dark
+    color="red darken-2"
+    show-arrows
+  >
+    <v-tabs-slider color="amber lighten-3"></v-tabs-slider>
+    <v-tab
+      v-for="grupo in grupos"
+      :key="grupo.l"
+      :href="'#grupo-' + grupo.l"
+    >
+    <v-badge left overlap color="red" :value="false">
+      <span slot="badge">!</span>
+      Grupo {{ grupo.l }}
+    </v-badge>
+    </v-tab>
+    
+    <v-tab
+      v-for="fase in fases"
+      :key="fase.id"
+      :href="'#' + fase.id"
+    >
+    <v-badge left overlap color="red" :value="false">
+      <span slot="badge">!</span>
+      {{ fase.fase }}
+    </v-badge>
+    </v-tab>
+
+
+
+
+
+
+
+
+    
+    <v-tabs-items>
+      <v-tab-item
+        v-for="grupo in grupos"
+        :key="grupo.l"
+        :id="'grupo-' + grupo.l">
+      
+        <!-- <h1 v-for="partida in grupo.partidas" :key="partida.id" >{{partida.time1nome}}</h1>-->
+        <span style="display: inline-block; margin-top: 20px;" > </span>
+        <v-layout v-for="partida in grupo.partidas" :key="partida.id" column>
+          <v-layout fluid wrap row align-items justify-center >
+               <v-flex xs4 sm2 lg1 >
+                 <v-layout row align-items align-center coluna1 justify-space-between>
+                    <v-avatar :size="20" :tile="true">
+                        <img :src="partida.time1.imgurl">
+                    </v-avatar>
+                    <div  class="text-xs-right"> {{partida.time1.sigla}}</div>
+                    
+                    <v-layout class = "input1layout">
+                      <div class="subheading"> {{partida.time1gols}} </div>
+                    </v-layout> 
+                 </v-layout>
+              </v-flex>
+              <v-flex  xs2 md1 align-end justify-end align-content-end >
+              <div ><p>x</p></div>
+              </v-flex>
+              <v-flex xs4 sm2 lg1>     
+                 <v-layout row align-center reverse coluna1 justify-space-between>
+                     <v-avatar :size="20" :tile="true">
+                         <img :src="partida.time2.imgurl">
+                     </v-avatar>
+                    <div  class="text-xs-right"> {{partida.time2.sigla}}</div>
+                    <v-layout class = "input1layout">
+                      <div class = "subheading "> {{partida.time2gols}} </div>
+                    </v-layout>
+                 </v-layout>
+            </v-flex>         
+          </v-layout>
+          <v-layout fluid wrap row align-items justify-center >
+            <p class="hora">{{partida.data +' - '+partida.hora}}</p>
+          </v-layout>
+         </v-layout> 
+
+         <h1>{{ligacaop}}</h1>   
+
+        <v-data-table
+        	:headers="headers"
+        	:items="grupo.times"
+          :pagination.sync="pagination"
+          :hide-actions="true"
+          class="elevation-1"
+          item-key="bandeira"
+         >
+          <template slot="items" slot-scope="props">
+              <td class="text-xs-right"  :id ="'pos'+ props.item.pos" >{{props.item.pos}}</td>
+              <td class="text-xs-center">
+                <v-avatar :tile="true" >
+                  <img :src= "props.item.imgurl" alt="avatar">
+                </v-avatar></td>	
+              <td class="text-xs-center">{{props.item.nome }}</td>
+              <td class="text-xs-right">{{props.item.p}}</td>
+              <td class="text-xs-right">{{props.item.v}}</td>
+              <td class="text-xs-right">{{props.item.e}}</td>
+              <td class="text-xs-right">{{props.item.d}}</td>
+              <td class="text-xs-right">{{props.item.gp}}</td>
+              <td class="text-xs-right">{{props.item.gc}}</td>
+              <td class="text-xs-right">{{props.item.sg}}</td>
+          </template>
+        </v-data-table>
+      </v-tab-item>
+      <v-tab-item v-for="(fase, indexFase) in fases" :key="fase.id"
+        :id="fase.id">
+        <v-layout row wrap v-for="(partida, indexPartida) in fase.partidas" :key="partida.titulo">
+          <v-flex xs12 sm10 md8 offset-sm1 offset-md2>
+            <v-card class="margin" color="grey lighten-3">
+              <v-container fluid>
+                <v-layout row>
+                  <v-flex wrap sm 9>
+                  <v-radio-group column :disabled="(partida.time1.id === null || partida.time2.id === null )" :v-model="partida.selecionado" >
+                    <v-layout row wrap >
+                      <v-flex xs2 sm1 wrap >
+                        <v-avatar v-if="(partida.time1.imgurl !== null)" class="avatarflex" :size="24" :tile="true">
+                          <img :src="partida.time1.imgurl">
+                        </v-avatar>
+                      </v-flex>
+                      <v-flex xs7 >
+                        <v-radio
+                        :ref="'radio' +indexFase+indexPartida+1"
+                        :disabled="true"
+                          @change="updateRadios(fases,indexFase,partida,1)"
+                          :label="partida.time1.nome"
+                          color="indigo darken_4"
+                          :value="partida.time1"
+                          :isActive="true"
+                        ></v-radio>
+                      </v-flex>
+                    </v-layout>
+                    <v-layout row wrap >
+                      <v-flex xs2 sm1 >
+                        <v-avatar v-if="(partida.time2.imgurl !== null)" class="avatarflex" :size="24" :tile="true">
+                          <img :src="partida.time2.imgurl">
+                        </v-avatar>
+                      </v-flex>
+                      <v-flex xs7 >
+                        <v-radio
+                        :ref="'radio' +indexFase+indexPartida+2"
+                        :disabled="true"
+                          @change="updateRadios(fases,indexFase,partida,2)"
+                          :label="partida.time2.nome"
+                          color="indigo darken_4"
+                          :value="partida.time2"
+                        ></v-radio>
+                      </v-flex>
+                    </v-layout>
+                  </v-radio-group>
+                  </v-flex>
+                  <v-flex align-center sm1 class ="subs">
+                    
+                        <div v-if="( indexFase !== 3 )" class="subs2">
+                            <h5 >{{fase.fase + ' ' + partida.numero}}</h5>
+                          <div>{{ partida.data +' '+ partida.hora}}</div>
+                        </div>
+                         <div v-else class="subs2">
+                            <h5 >{{fase.fase}}</h5>
+                          <div>{{ partida.data +' '+ partida.hora}}</div>
+                        </div>                       
+                      
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card>
+
+            <v-card v-if="(indexFase === 3)" class="margin" dark color="gray darken-4">
+              <v-container fluid  >
+                <v-layout row>
+                      <v-flex  >
+                        <h3 class="headline">Campeão</h3>
+                        <h3 class="title">{{campeao.nome}}</h3>
+                        <v-avatar class="avatarflex" :size="24" :tile="true">
+                          <img :src="campeao.imgurl">
+                        </v-avatar>
+                      </v-flex>
+                      
+                </v-layout>
+              </v-container>
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </v-tab-item>
+    </v-tabs-items>
   </v-tabs>
- </v-container>
-<v-container v-else>
-    <div class = "text-xs-center"> <v-progress-circular :size="50" indeterminate color="red"></v-progress-circular></div>
+  </v-container>
+  <v-container v-else>
+    <div class = "text-xs-center">Você ainda não cadastrou seu palpite.</div>
+            <span style="display: inline-block; margin-top: 20px;" > </span>
+
+    <v-flex xs12 sm6 class="text-xs-center text-sm-left">
+          <v-btn large router to="/apostas" class="info">Cadastrar Palpite </v-btn>
+        </v-flex>
   </v-container>
 </template>
 
 <script>
   export default {
-    props: ['id'],
-    loading: true,
     beforeCreate () {
-      if (this.$store.getters.loadedApostas.length === 0) {
-        this.$store.dispatch('loadApostas')
+      if (this.$store.getters.loadedGabarito === null) {
+        this.$store.dispatch('loadGabarito')
       }
-      if (this.$store.getters.loadedUsuarios.length === 0) {
-        this.$store.dispatch('loadUsuarios')
-      }
-     // console.log(this.$store.getters.loadedApostas)
+      this.$store.dispatch('loadMinhasApostas')
+      // var ap = this.$store.getters.loadedMinhasApostas
+      //  console.log('ap')
+      //  console.log(ap.fases)
+      //  console.log(ap.grupos)
     },
     data () {
       return {
@@ -237,39 +280,42 @@
       }
     },
     computed: {
-      apostasUsuario () {
-        var apostas = this.$store.getters.loadedApostas
-        var apostasindex = apostas.findIndex((ap) => {
-          return ap.usuarioid === this.id
-        })
-       // console.log(apostas)
-       // console.log(apostas[apostasindex])
-       // console.log(apostasindex)
-        return apostas[apostasindex]
+      gabarito () {
+        return this.$store.getters.loadedGabarito
       },
-      usuarios () {
-       // console.log(this.$store.getters.loadedUsuarios)
-        return this.$store.getters.loadedUsuarios
-      },
-      usuarioNome () {
-        var usidex = this.usuarios.findIndex((u) => {
-          return u.id === this.id
-        })
-        var nome = this.usuarios[usidex].nome
-        if (nome.indexOf(' ') === -1) {
-          nome = this.usuarios[usidex].nomeOriginal
-        }
-        return this.toTitleCase(nome)
+      loading () {
+        return this.$store.getters.loading
       },
       minhasApostasGrupos () {
        // console.log('apgrupos:')
        // console.log(this.$store.getters.loadedMinhasApostas.grupos)
-        return this.apostasUsuario.grupos
+        return this.gabarito.grupos
       },
       minhasApostasFases () {
      //   console.log(this.$store.getters.loadedMinhasApostas.fases)
-        return this.apostasUsuario.fases
+        return this.gabarito.fases
       },
+      ultimoJogot1 () {
+        var it = this.times.findIndex((t1) => {
+          return t1.id === this.gabarito.ultimojogoT1
+        })
+        return this.times[it]
+      },
+      ultimoJogot2 () {
+        var it = this.times.findIndex((t2) => {
+          return t2.id === this.gabarito.ultimojogoT2
+        })
+        return this.times[it]
+      },
+      /* minhasApostasGrupos () {
+       // console.log('apgrupos:')
+       // console.log(this.$store.getters.loadedMinhasApostas.grupos)
+        return this.$store.getters.loadedMinhasApostas.grupos
+      },
+      minhasApostasFases () {
+     //   console.log(this.$store.getters.loadedMinhasApostas.fases)
+        return this.$store.getters.loadedMinhasApostas.fases
+      }, */
       times () {
         return this.$store.getters.loadedTimes
       },
@@ -349,22 +395,10 @@
           this.update(grupo)
         })
         this.updateRadios()
-        this.loading = false
         return gruposOrganizados
       }
     },
     methods: {
-      toTitleCase (str) {
-        var s = str.replace(
-          /([^\W_]+[^\s-]*) */g,
-          function (txt) {
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-          }
-        )
-        return s.replace(/De |Da |Das |Dos /gi, function (x) {
-          return x.toLowerCase()
-        })
-      },
       calculaPontuacao (time, grupo) {
         // time.dados = {p: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0, sg: 0}
         time.p = 0
@@ -375,7 +409,7 @@
         time.gc = 0
         time.sg = 0
         grupo.partidas.forEach(partida => {
-          if ((partida.time1gols !== '' && partida.time2gols !== '') && (partida.time1gols !== null && partida.time2gols !== null)) {
+          if (partida.time1gols !== '' && partida.time1gols !== undefined && partida.time2gols !== '' && partida.time2gols !== undefined && partida.time1gols !== null && partida.time2gols !== null) {
             if (time.id === partida.time1.id) {
               time.gp += Number(partida.time1gols)
               time.gc += Number(partida.time2gols)
@@ -419,29 +453,32 @@
               return app.numero === partida.numero
             })
             var app = apf.partidas[indexP]
-            partida.selecionado = app.selecionado
-            var ntime = partida.selecionado
-            if (this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime] !== undefined) {
-             // console.log('radio' + indexFase + partida.numero + ntime)
-             // console.log(this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime][0])
-              this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime][0].isActive = true
-            }
-            var timesel = {id: null, grupo: null, nome: null, imgurl: null}
-            if (ntime === 1) {
-              timesel = partida.time1
-            } else {
-              timesel = partida.time2
-            }
-            if (fase.fase === 'Final') {
-              this.campeao = timesel
-            } else {
-              if (Number(((partida.numero - 1) % 2) + 1) === 1) {
-                this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time1 = timesel
-              } else {
-                this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time2 = timesel
+            if (app.selecionado !== undefined && app.selecionado !== null) {
+              partida.selecionado = app.selecionado
+              var ntime = partida.selecionado
+              console.log(this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime])
+              if (this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime] !== undefined) {
+              // console.log('radio' + indexFase + partida.numero + ntime)
+              // console.log(this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime][0])
+                this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime][0].isActive = true
               }
+              var timesel = {id: null, grupo: null, nome: null, imgurl: null}
+              if (ntime === 1) {
+                timesel = partida.time1
+              } else {
+                timesel = partida.time2
+              }
+              if (fase.fase === 'Final') {
+                this.campeao = timesel
+              } else {
+                if (Number(((partida.numero - 1) % 2) + 1) === 1) {
+                  this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time1 = timesel
+                } else {
+                  this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time2 = timesel
+                }
+              }
+              this.ligacaop += 1
             }
-            this.ligacaop += 1
           })
         }
       },
@@ -528,9 +565,6 @@
         }
       },
       update (grupo) {
-       // (numTime, indexG, indexP)
-       // var grupo = this.grupos[indexG]
-       // var partida = grupo.partidas[indexP]
         var apGrupos = this.minhasApostasGrupos
         var indexG = apGrupos.findIndex((apg) => {
           return apg.l === grupo.l
@@ -548,12 +582,23 @@
         grupo.times.forEach(time => {
           this.calculaPontuacao(time, grupo)
         })
-        this.pagination.sortBy = 'pos'
         this.calculaPosicoes(grupo)
-        this.updateOitavas(grupo)
+        this.pagination.sortBy = 'pos'
+        // calcula completude
+        var completo = true
+        for (let i = 0; (i < grupo.times.length && completo); i++) {
+          const time = grupo.times[i]
+          if (time.v + time.e + time.d !== 3) {
+            completo = false
+          }
+        }
+        if (completo) {
+          console.log('Completo!!!!!!')
+          this.updateOitavas(grupo)
+        }
         this.ligacaop += 1
-      }
-      /* salvarPalpites () {
+      },
+      salvarPalpites () {
        // console.log(this.grupos)
         var gruposApostas = []
         this.grupos.forEach(grupo => {
@@ -577,7 +622,7 @@
         })
        // console.log(fasesApostas)
         this.$store.dispatch('cadastraMinhasApostas', {grupos: gruposApostas, fases: fasesApostas})
-      } */
+      }
     }
   }
 </script>
@@ -657,7 +702,5 @@ div.subs2 {
   padding-top:20px;
   float: right;
 }
-div.nometitulo {
-  margin:20px;
-}
+
 </style>

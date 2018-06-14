@@ -11,6 +11,7 @@ import Admin from '@/components/Admin/Admin'
 import Usuarios from '@/components/Admin/Usuarios'
 import Cadastre from '@/components/Admin/Cadastre'
 import Gabarito from '@/components/Admin/Gabarito'
+import Resultados from '@/components/Admin/ResultadosOficiais'
 import Signin from '@/components/User/Signin'
 import AuthGuard from './auth-guard'
 
@@ -43,6 +44,11 @@ export default new Router({
       path: '/apostas',
       name: 'Apostas',
       component: Apostas
+    },
+    {
+      path: '/resultados',
+      name: 'Resultados',
+      component: Resultados
     },
     {
       path: '/apostasCadastradas',
