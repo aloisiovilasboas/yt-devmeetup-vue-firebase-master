@@ -2,7 +2,7 @@
   <v-container fluid grid-list-md text-xs-center :id="'container'">
 
 <v-alert :value="!userIsAuthenticated" type="warning">
-      Você ainda não está cadastrado. Procure um dos organizadores para saber como participar. Boa sorte!
+     Apostas Encerradas! Boa Sorte!
     </v-alert>
 
 <v-alert v-if="nomeDeUsuario !== null" :value="userIsAuthenticated" type="info">
@@ -252,7 +252,7 @@
     },
     computed: {
       userIsAuthenticated () {
-        return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+        return false
       },
       usuarios () {
         return this.$store.getters.loadedUsuarios

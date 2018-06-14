@@ -30,7 +30,8 @@ export const store = new Vuex.Store({
         description: 'It\'s Paris!'
       }
     ],
-    loadedTimes: [
+    loadedTimes: [],
+    /*
       {
         nome: 'Arabia',
         grupo: 'A',
@@ -40,8 +41,7 @@ export const store = new Vuex.Store({
         nome: 'Russia',
         grupo: 'A',
         imgurl: 'https://firebasestorage.googleapis.com/v0/b/yt-dev-meetup-6a846.appspot.com/o/flags%2Frussia.png?alt=media&token=fac5c120-2ad1-4b5f-ac74-189d02581254'
-      }
-    ],
+      } */
     loadedPartidas: [],
     loadedFases: [],
     user: null,
@@ -714,6 +714,9 @@ export const store = new Vuex.Store({
   getters: {
     loadedApostas (state) {
       return state.loadedApostas
+    },
+    loadedApostasSalvas (state) {
+      return state.loadedApostasSalvas
     },
     loadedMeetups (state) {
       return state.loadedMeetups.sort((meetupA, meetupB) => {

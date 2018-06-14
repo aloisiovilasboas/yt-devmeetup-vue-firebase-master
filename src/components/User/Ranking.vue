@@ -1,8 +1,66 @@
 <template>
-<v-container v-if = "jogadores !== undefined && jogadores.length !== 0" >
+<v-container v-if = "jogadores !== undefined && jogadores.length !== 0 && gabarito !== null && gabarito !== undefined" fluid grid-list-md text-xs-center :id="'container'">
 <v-layout column >
-  <v-layout>
-    <v-flex xs10 offset-xs1 >
+  <v-layout column >
+    <v-flex xs12 >
+      <div>
+      <v-card>
+      <v-container
+        fluid
+        style="min-height: 0;"
+        grid-list-lg
+      >
+      <v-layout row wrap>
+          <v-flex xs12>
+            <v-card color="blue-grey darken-4" class="white--text">
+              <v-container fluid grid-list-lg>
+             
+                <div class="headline">Último jogo:</div>
+              </v-container>
+              <v-container fluid grid-list-lg>
+      <div>
+       <v-layout fluid wrap row align-items justify-center >
+               <v-flex xs4 sm2 lg1 >
+                 <v-layout row align-items align-center coluna1 justify-space-between>
+                    <v-avatar :size="40" :tile="true">
+                        <img :src="ultimoJogot1.imgurl">
+                    </v-avatar>
+                    <div  class="text-xs-right subheading"> {{ultimoJogot1.sigla}}</div>
+                 </v-layout>
+              </v-flex>
+              <v-flex  xs2 md1 align-end justify-end align-content-end >
+              <div ><p>x</p></div>
+              </v-flex>
+              <v-flex xs4 sm2 lg1>     
+                 <v-layout row align-center reverse coluna1 justify-space-between>
+                     <v-avatar :size="40" :tile="true">
+                         <img :src="ultimoJogot2.imgurl">
+                     </v-avatar>
+                    <div  class="text-xs-right subheading"> {{ultimoJogot2.sigla}}</div>
+                 </v-layout>
+            </v-flex>         
+          </v-layout>
+    </div>
+             
+              </v-container>
+            </v-card>        
+          </v-flex>
+      </v-layout>
+      </v-container>
+      </v-card>
+
+      <v-btn :to="'/Resultados'" round color="primary" dark>Resultados dos Jogos</v-btn>
+
+      
+    </div>
+    </v-flex>
+  <v-card>
+      <v-container
+        fluid
+        style="min-height: 0;"
+        grid-list-lg
+      >
+    <v-flex xs12 >
     <v-data-table
         :headers="headers"
         :items="jogadores"
@@ -25,6 +83,8 @@
         </template>
       </v-data-table>
     </v-flex>
+      </v-container>
+  </v-card>
   </v-layout>
 </v-layout>
 </v-container>
@@ -44,6 +104,9 @@
       }
       if (this.$store.getters.loadedGabarito === undefined || this.$store.getters.loadedGabarito === null) {
         this.$store.dispatch('loadGabarito')
+      }
+      if (this.$store.getters.loadedTimes === undefined || this.$store.getters.loadedTimes.length === 0) {
+        this.$store.dispatch('loadTimes')
       }
       // var ap = this.$store.getters.loadedMinhasApostas
       //  console.log('ap')
@@ -101,12 +164,41 @@
       },
       calculaPosicoes (jogadores) {
         jogadores.sort(function (jogadorA, jogadorB) {
-          return jogadorB.pontuacao - jogadorA.pontuacao
+          if (jogadorB.pontuacao - jogadorA.pontuacao === 0) {
+            var nameA = jogadorA.nome // ignore upper and lowercase
+            var nameB = jogadorB.nome // ignore upper and lowercase
+            if (nameA < nameB) {
+              return -1
+            }
+            if (nameA > nameB) {
+              return 1
+            }
+            return 0
+          } else {
+            return jogadorB.pontuacao - jogadorA.pontuacao
+          }
         })
-        var i = 1
+/*         var i = 1
         jogadores.forEach(jogador => {
           jogador.pos = i
           i++
+        }) */
+        var pos = 1
+        var i = 0
+        var pontuacaoanterior = 0
+        var inicio = true
+        jogadores.forEach(jogador => {
+          i++
+          if (inicio) {
+            pontuacaoanterior = jogador.pontuacao
+            inicio = false
+          } else {
+            if (jogador.pontuacao < pontuacaoanterior) {
+              pos = i
+              pontuacaoanterior = jogador.pontuacao
+            }
+          }
+          jogador.pos = pos
         })
        // var posicao = 1
        // jogadores[0].pos = 1
@@ -120,6 +212,30 @@
       }
     },
     computed: {
+      times () {
+        var times = this.$store.getters.loadedTimes
+        function removerAcentos (s) {
+          return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        }
+        times.forEach(time => {
+          var sigla = removerAcentos(time.nome.slice(0, 3).toUpperCase())
+         // console.log(sigla)
+          time.sigla = sigla
+        })
+        return times
+      },
+      ultimoJogot1 () {
+        var it = this.times.findIndex((t1) => {
+          return t1.id === this.gabarito.ultimojogoT1
+        })
+        return this.times[it]
+      },
+      ultimoJogot2 () {
+        var it = this.times.findIndex((t2) => {
+          return t2.id === this.gabarito.ultimojogoT2
+        })
+        return this.times[it]
+      },
       users () {
         return this.$store.getters.loadedUsuarios
       },
@@ -140,11 +256,11 @@
         var filtrados = []
         usuarios.forEach(user => {
           if (!user.pendente && user.pago) {
-            var indexAposta = this.apostas.findIndex((aposta) => {
+            var indexAposta = this.apostasSalvas.findIndex((aposta) => {
               return aposta.usuarioid === user.id
             })
             if (indexAposta !== -1) {
-              user.apostas = this.apostas[indexAposta]
+              user.apostas = this.apostasSalvas[indexAposta]
               if (user.nome.indexOf(' ') === -1) {
                 user.nome = user.nomeOriginal
               }

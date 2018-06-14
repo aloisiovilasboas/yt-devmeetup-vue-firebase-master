@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if = "$store.getters.loadedMinhasApostas !== null" fluid grid-list-md text-xs-center :id="'container'">
+  <v-container v-if = "gabarito !== null" fluid grid-list-md text-xs-center :id="'container'">
     <div>
       <v-card>
       <v-container
@@ -236,12 +236,7 @@
   </v-tabs>
   </v-container>
   <v-container v-else>
-    <div class = "text-xs-center">Você ainda não cadastrou seu palpite.</div>
-            <span style="display: inline-block; margin-top: 20px;" > </span>
-
-    <v-flex xs12 sm6 class="text-xs-center text-sm-left">
-          <v-btn large router to="/apostas" class="info">Cadastrar Palpite </v-btn>
-        </v-flex>
+    <div class = "text-xs-center"> <v-progress-circular :size="50" indeterminate color="red"></v-progress-circular></div>
   </v-container>
 </template>
 
@@ -251,7 +246,15 @@
       if (this.$store.getters.loadedGabarito === null) {
         this.$store.dispatch('loadGabarito')
       }
-      this.$store.dispatch('loadMinhasApostas')
+      if (this.$store.getters.loadedTimes.length === 0) {
+        this.$store.dispatch('loadTimes')
+      }
+      if (this.$store.getters.loadedPartidas.length === 0) {
+        this.$store.dispatch('loadPartidas')
+      }
+      if (this.$store.getters.loadedFases === null) {
+        this.$store.dispatch('loadFases')
+      }
       // var ap = this.$store.getters.loadedMinhasApostas
       //  console.log('ap')
       //  console.log(ap.fases)

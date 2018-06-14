@@ -91,6 +91,8 @@
           }
         }
         menuItems.push({icon: 'list_alt', title: 'Regras', link: '/regras'})
+        menuItems.push({icon: 'format_list_numbered', title: 'Ranking', link: '/ranking'})
+        menuItems.push({icon: 'flag', title: 'Resultados', link: '/resultados'})
         menuItems.push({icon: 'info', title: 'Sobre', link: '/sobre'})
         return menuItems
       },
