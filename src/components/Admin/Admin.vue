@@ -52,10 +52,10 @@
                       <v-icon left light>arrow_forward</v-icon>
                         Resultados
                      </v-btn>
-                        <v-btn  v-on:click="SalvaApostas">
+                       <!-- <v-btn  v-on:click="SalvaApostas">
                           <v-icon left light>arrow_forward</v-icon>
                           Salva Apostas
-                        </v-btn>
+                        </v-btn> -->
 
                      
                     </v-flex>

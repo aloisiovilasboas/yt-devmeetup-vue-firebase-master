@@ -5,29 +5,58 @@
       Último jogo:
       </div>
        <v-layout fluid wrap row align-items justify-center>
-      
-      <v-flex xs4  lg2>
-        <v-select
-          :items="timesAlfabeticos"
-          v-model="ultimojogoT1"
-          item-text="nome"
-          item-avatar="imgurl"
-          label="Select"
-          autocomplete
-        ></v-select>
+      <v-flex xs4 >     
+        <v-layout row align-center coluna1 justify-space-between>
+            <v-flex xs11  >
+              <v-select
+                :items="timesAlfabeticos"
+                v-model="ultimojogoT1"
+                item-text="nome"
+                item-avatar="imgurl"
+                label="Select"
+                autocomplete
+              ></v-select>
+            </v-flex>
+            <v-flex style="margin-left:15px;">
+             <v-layout class = "input1layout">
+                <v-text-field
+                  class = "input1"
+                  mask="##"
+                  v-model="ultimojogoT1gols"
+                  hide-actions
+                  single-line
+                ></v-text-field>
+              </v-layout>
+            </v-flex>
+        </v-layout>
       </v-flex>
       <v-flex  xs2 md1 align-end justify-end align-content-end >
               <div class="xizinho"><p class="xizinho">x</p></div>
               </v-flex>
-      <v-flex xs4 lg2>
-        <v-select
-          :items="timesAlfabeticos"
-          v-model="ultimojogoT2"
-          item-text="nome"
-          item-avatar="imgurl"
-          label="Select"
-          autocomplete
-        ></v-select>
+      <v-flex xs4 >
+        <v-layout row align-center reverse coluna1 justify-space-between>
+          <v-flex xs11 >
+            <v-select
+              :items="timesAlfabeticos"
+              v-model="ultimojogoT2"
+              item-text="nome"
+              item-avatar="imgurl"
+              label="Select"
+              autocomplete
+            ></v-select>
+          </v-flex>
+          <v-flex style="margin-right:28px;">
+             <v-layout class = "input1layout">
+                <v-text-field
+                  class = "input1"
+                  mask="##"
+                  v-model="ultimojogoT2gols"
+                  hide-actions
+                  single-line
+                ></v-text-field>
+              </v-layout>
+            </v-flex>
+        </v-layout>
       </v-flex>
     </v-layout>
     
@@ -273,6 +302,8 @@
       return {
         ultimojogoT1: null,
         ultimojogoT2: null,
+        ultimojogoT1gols: null,
+        ultimojogoT2gols: null,
         ex7: 'red',
         ex8: 'primary',
         begin: 0,
@@ -721,7 +752,7 @@
           fasesApostas.push(faseAposta)
         })
        // console.log(fasesApostas)
-        this.$store.dispatch('cadastraGabarito', {grupos: gruposApostas, fases: fasesApostas, ultimojogoT1: this.ultimojogoT1.id, ultimojogoT2: this.ultimojogoT2.id})
+        this.$store.dispatch('cadastraGabarito', {grupos: gruposApostas, fases: fasesApostas, ultimojogoT1gols: this.ultimojogoT1gols, ultimojogoT2gols: this.ultimojogoT2gols, ultimojogoT1: this.ultimojogoT1.id, ultimojogoT2: this.ultimojogoT2.id})
         this.$router.push('/Ranking')
       },
       limparGabarito () {
@@ -745,7 +776,7 @@
           fasesApostas.push(faseAposta)
         })
        // console.log(fasesApostas)
-        this.$store.dispatch('cadastraGabarito', {grupos: gruposApostas, fases: fasesApostas, ultimojogoT1: null, ultimojogoT2: null})
+        this.$store.dispatch('cadastraGabarito', {grupos: gruposApostas, fases: fasesApostas, ultimojogoT1: null, ultimojogoT2: null, ultimojogoT1gols: null, ultimojogoT2gols: null})
         this.$router.push('Ranking')
       }
     }
@@ -825,6 +856,10 @@ div.subs {
 }
 div.subs2 {
   padding-top:20px;
+  float: right;
+}
+margin {
+  margin:30px;
   float: right;
 }
 

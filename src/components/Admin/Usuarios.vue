@@ -50,8 +50,20 @@
   <v-layout row>
     <div> Pagos: </div> <div><b>{{nroPagos}}</b></div> 
   </v-layout>
-
-
+  <v-layout row>
+    <div> Pagos Não enviados: </div> <div><b>{{nroPagosNaoEnviados}}</b></div> 
+    
+  </v-layout>
+  <v-layout row>
+    <div> Pagos Não enviados: </div> <div><b>{{strPagosNaoEnviados}}</b></div> 
+  </v-layout>
+    <v-layout row>
+    <div> Enviados não pagos: </div> <div><b>{{nroEnviadosNaoPAgos}}</b></div> 
+    
+  </v-layout>
+  <v-layout row>
+    <div> Enviados não pagos: </div> <div><b>{{strEnviadosNaoPAgos}}</b></div> 
+  </v-layout>
   <v-layout row>
     
                   <v-text-field
@@ -85,6 +97,10 @@
         nroCadastrados: 0,
         nroEnviados: 0,
         nroPagos: 0,
+        nroPagosNaoEnviados: 0,
+        strPagosNaoEnviados: '',
+        nroEnviadosNaoPAgos: 0,
+        strEnviadosNaoPAgos: '',
         headers: [
           {text: 'Nº', value: 'index'},
           {text: 'Nome Original', value: 'nomeOriginal'},
@@ -105,7 +121,7 @@
         return false
       },
       apostas () {
-        return this.$store.getters.loadedApostas
+        return this.$store.getters.loadedApostasSalvas
       },
       usuarioLogado () {
         return this.$store.getters.user
@@ -120,6 +136,7 @@
         this.nroCadastrados = 0
         this.nroEnviados = 0
         this.nroPagos = 0
+        this.nroPagosNaoEnviados = 0
         var usuarios = this.users
         var admins = this.admins
         usuarios.filter(user => user.pendente === 'true')
@@ -156,6 +173,15 @@
           }
           if (user.pago) {
             this.nroPagos++
+            if (user.situacao !== 'Enviado') {
+              this.nroPagosNaoEnviados++
+              this.strPagosNaoEnviados += user.nomeOriginal + ', '
+            }
+          } else {
+            if (user.situacao === 'Enviado') {
+              this.nroEnviadosNaoPAgos++
+              this.strEnviadosNaoPAgos += user.nomeOriginal + ', '
+            }
           }
           var indexAdmin = admins.findIndex((admin) => {
             return admin.adminId === user.addedby

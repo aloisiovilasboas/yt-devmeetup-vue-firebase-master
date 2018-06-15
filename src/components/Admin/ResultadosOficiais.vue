@@ -12,7 +12,7 @@
             <v-card color="blue-grey darken-4" class="white--text">
               <v-container fluid grid-list-lg>
              
-                <div class="headline">Último jogo:</div>
+                <div class="headline">Último jogo</div>
               </v-container>
               <v-container fluid grid-list-lg>
                 <div>
@@ -23,6 +23,7 @@
                         <img :src="ultimoJogot1.imgurl">
                     </v-avatar>
                     <div  class="text-xs-right subheading"> {{ultimoJogot1.sigla}}</div>
+                    <div  class="text-xs-right subheading"> {{ultimoJogoT1gols}}</div>
                  </v-layout>
               </v-flex>
               <v-flex  xs2 md1 align-end justify-end align-content-end >
@@ -34,6 +35,7 @@
                          <img :src="ultimoJogot2.imgurl">
                      </v-avatar>
                     <div  class="text-xs-right subheading"> {{ultimoJogot2.sigla}}</div>
+                    <div  class="text-xs-right subheading"> {{ultimoJogoT2gols}}</div>
                  </v-layout>
             </v-flex>         
           </v-layout>
@@ -302,23 +304,28 @@
         var it = this.times.findIndex((t1) => {
           return t1.id === this.gabarito.ultimojogoT1
         })
-        return this.times[it]
+        if (it === -1) {
+          return {nome: '', imgurl: ''}
+        } else {
+          return this.times[it]
+        }
       },
       ultimoJogot2 () {
         var it = this.times.findIndex((t2) => {
           return t2.id === this.gabarito.ultimojogoT2
         })
-        return this.times[it]
+        if (it === -1) {
+          return {nome: '', imgurl: ''}
+        } else {
+          return this.times[it]
+        }
       },
-      /* minhasApostasGrupos () {
-       // console.log('apgrupos:')
-       // console.log(this.$store.getters.loadedMinhasApostas.grupos)
-        return this.$store.getters.loadedMinhasApostas.grupos
+      ultimoJogoT1gols () {
+        return this.gabarito.ultimojogoT1gols
       },
-      minhasApostasFases () {
-     //   console.log(this.$store.getters.loadedMinhasApostas.fases)
-        return this.$store.getters.loadedMinhasApostas.fases
-      }, */
+      ultimoJogoT2gols () {
+        return this.gabarito.ultimojogoT2gols
+      },
       times () {
         return this.$store.getters.loadedTimes
       },

@@ -83,7 +83,7 @@
         ]
         if (this.userIsAuthenticated) {
           menuItems = [
-            {icon: 'casino', title: 'Fazer Apostas', link: '/apostas'},
+          //  {icon: 'casino', title: 'Fazer Apostas', link: '/apostas'},
             {icon: 'line_style', title: 'Apostas Cadastradas', link: '/apostasCadastradas'}
           ]
           if (this.isAdmin) {

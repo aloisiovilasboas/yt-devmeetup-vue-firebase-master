@@ -15,7 +15,7 @@
             <v-card color="blue-grey darken-4" class="white--text">
               <v-container fluid grid-list-lg>
              
-                <div class="headline">Último jogo:</div>
+                <div class="headline">Último jogo</div>
               </v-container>
               <v-container fluid grid-list-lg>
       <div>
@@ -26,6 +26,7 @@
                         <img :src="ultimoJogot1.imgurl">
                     </v-avatar>
                     <div  class="text-xs-right subheading"> {{ultimoJogot1.sigla}}</div>
+                    <div  class="text-xs-right subheading"> {{ultimoJogoT1gols}}</div>
                  </v-layout>
               </v-flex>
               <v-flex  xs2 md1 align-end justify-end align-content-end >
@@ -37,6 +38,7 @@
                          <img :src="ultimoJogot2.imgurl">
                      </v-avatar>
                     <div  class="text-xs-right subheading"> {{ultimoJogot2.sigla}}</div>
+                    <div  class="text-xs-right subheading"> {{ultimoJogoT2gols}}</div>
                  </v-layout>
             </v-flex>         
           </v-layout>
@@ -64,12 +66,15 @@
     <v-data-table
         :headers="headers"
         :items="jogadores"
-       
+        :pagination.sync="pagination"
         hide-actions
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
           <tr class="mouseoverlink" >
+       <!--     <td class="text-xs-left">
+              <router-link :to="`/perfil/${props.item.id}`" tag="td">{{ props.item.i }}</router-link>
+            </td> -->
             <td class="text-xs-left">
               <router-link :to="`/perfil/${props.item.id}`" tag="td">{{ props.item.pos }}</router-link>
             </td>
@@ -128,8 +133,9 @@
         nroCadastrados: 0,
         nroEnviados: 0,
         nroPagos: 0,
-        pagination: {'sortBy': 'pontuacao', 'rowsPerPage': -1},
+        pagination: {'sortBy': 'i', 'rowsPerPage': -1},
         headers: [
+        //  {text: 'Nº', value: 'i'},
           {text: 'Posição', value: 'pos'},
           {text: 'Nome', value: 'nome'},
           {text: 'Pontos', value: 'pontuacao'}
@@ -162,7 +168,7 @@
         }
         return pontuacao
       },
-      calculaPosicoes (jogadores) {
+      calculaPontuacao (jogadores) {
         jogadores.sort(function (jogadorA, jogadorB) {
           if (jogadorB.pontuacao - jogadorA.pontuacao === 0) {
             var nameA = jogadorA.nome // ignore upper and lowercase
@@ -178,11 +184,6 @@
             return jogadorB.pontuacao - jogadorA.pontuacao
           }
         })
-/*         var i = 1
-        jogadores.forEach(jogador => {
-          jogador.pos = i
-          i++
-        }) */
         var pos = 1
         var i = 0
         var pontuacaoanterior = 0
@@ -198,6 +199,7 @@
               pontuacaoanterior = jogador.pontuacao
             }
           }
+          jogador.i = i
           jogador.pos = pos
         })
        // var posicao = 1
@@ -228,13 +230,27 @@
         var it = this.times.findIndex((t1) => {
           return t1.id === this.gabarito.ultimojogoT1
         })
-        return this.times[it]
+        if (it === -1) {
+          return {nome: '', imgurl: ''}
+        } else {
+          return this.times[it]
+        }
       },
       ultimoJogot2 () {
         var it = this.times.findIndex((t2) => {
           return t2.id === this.gabarito.ultimojogoT2
         })
-        return this.times[it]
+        if (it === -1) {
+          return {nome: '', imgurl: ''}
+        } else {
+          return this.times[it]
+        }
+      },
+      ultimoJogoT1gols () {
+        return this.gabarito.ultimojogoT1gols
+      },
+      ultimoJogoT2gols () {
+        return this.gabarito.ultimojogoT2gols
       },
       users () {
         return this.$store.getters.loadedUsuarios
@@ -250,7 +266,7 @@
       },
       jogadores () {
        // console.log('gabarito')
-        console.log(this.$store.getters.gabarito)
+       // console.log(this.$store.getters.gabarito)
         var usuarios = this.users
         var index = 1
         var filtrados = []
@@ -287,8 +303,8 @@
             }
             jogador.pontuacao = pontos
           })
-          this.calculaPosicoes(filtrados)
-         // this.pagination.sortBy = 'pos'
+          this.calculaPontuacao(filtrados)
+          this.pagination.sortBy = 'i'
          // console.log(filtrados)
           return filtrados
         } else {

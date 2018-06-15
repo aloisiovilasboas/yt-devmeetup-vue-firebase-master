@@ -217,7 +217,7 @@ export const store = new Vuex.Store({
       commit('setLoading', true)
       firebase.database().ref('gabarito').once('value')
         .then((data) => {
-          const gabarito = {grupos: data.val().grupos, fases: data.val().fases, ultimojogoT1: data.val().ultimojogoT1, ultimojogoT2: data.val().ultimojogoT2}
+          const gabarito = {grupos: data.val().grupos, fases: data.val().fases, ultimojogoT1: data.val().ultimojogoT1, ultimojogoT2: data.val().ultimojogoT2, ultimojogoT1gols: data.val().ultimojogoT1gols, ultimojogoT2gols: data.val().ultimojogoT2gols}
           commit('setaGabarito', gabarito)
           commit('setLoading', false)
         })
@@ -556,7 +556,7 @@ export const store = new Vuex.Store({
         )
     },
     cadastraGabarito ({commit, getters}, payload) {
-      var gabarito = {grupos: payload.grupos, fases: payload.fases, ultimojogoT1: payload.ultimojogoT1, ultimojogoT2: payload.ultimojogoT2, adminid: store.getters.user.id}
+      var gabarito = {grupos: payload.grupos, fases: payload.fases, ultimojogoT1: payload.ultimojogoT1, ultimojogoT2: payload.ultimojogoT2, adminid: store.getters.user.id, ultimojogoT1gols: payload.ultimojogoT1gols, ultimojogoT2gols: payload.ultimojogoT2gols}
       firebase.database().ref('gabarito').set(gabarito).then((data) => {
         console.log(data)
         commit('setaGabarito', {

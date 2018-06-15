@@ -6,17 +6,17 @@
           <v-btn large router to="/meetups" class="info">Explore Meetups</v-btn>
         </v-flex> -->
         <v-flex xs12  class="text-xs-center ">
+          <v-btn large router to="/ranking" class="red darken-4 white--text">
+          <v-icon>format_list_numbered</v-icon>
+          Ranking
+          </v-btn>
+          <v-btn large router to="/resultados" class="info">
+          <v-icon>flag</v-icon>
+          Resultados
+          </v-btn>
           <v-btn large router to="/regras" class="info">
           <v-icon>list_alt</v-icon>
           Regras
-          </v-btn>
-          <v-btn large router to="/sobre" class="info">
-          <v-icon>info</v-icon>
-          Sobre o bolão
-          </v-btn>
-          <v-btn large router to="/apostas" class="info">
-          <v-icon>casino</v-icon>
-          Fazer Palpites
           </v-btn>
         </v-flex>
         
