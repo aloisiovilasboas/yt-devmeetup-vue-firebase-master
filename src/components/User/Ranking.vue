@@ -296,7 +296,14 @@
                // console.log(this.gabarito.grupos[i].partidas[j])
                 if (this.gabarito.grupos[i].partidas[j].time1gols !== null && this.gabarito.grupos[i].partidas[j].time1gols !== undefined) {
                 //  console.log(jogador.apostas.grupos[i].partidas[j])
-                  var pontosPartida = this.calculaPontuacaoGrupo(jogador.apostas.grupos[i].partidas[j], this.gabarito.grupos[i].partidas[j])
+                // console.log(jogador.nome)
+                // console.log(jogador.apostas.grupos[i].partidas[j])
+                // console.log('gabarito')
+                // console.log(this.gabarito.grupos[i].partidas[j])
+                  var ipart = jogador.apostas.grupos[i].partidas.findIndex((partida) => {
+                    return partida.id === this.gabarito.grupos[i].partidas[j].id
+                  })
+                  var pontosPartida = this.calculaPontuacaoGrupo(jogador.apostas.grupos[i].partidas[ipart], this.gabarito.grupos[i].partidas[j])
                   pontos += pontosPartida
                 }
               }

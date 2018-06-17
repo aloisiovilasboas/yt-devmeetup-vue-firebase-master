@@ -216,7 +216,12 @@
 <script>
   export default {
     beforeCreate () {
-      this.$store.dispatch('loadMinhasApostas')
+      if (this.$store.getters.loadedTimes.length === 0) {
+        this.$store.dispatch('loadTimes')
+      }
+      if (this.$store.getters.loadedMinhasApostas === null) {
+        this.$store.dispatch('loadMinhasApostas')
+      }
       // var ap = this.$store.getters.loadedMinhasApostas
       //  console.log('ap')
       //  console.log(ap.fases)

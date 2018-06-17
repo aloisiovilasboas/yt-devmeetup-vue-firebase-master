@@ -71,12 +71,26 @@
                     v-model="novoUsuario"
                   ></v-text-field>
   </v-layout>
-                  <v-btn  v-on:click="onCreateUsuario">
+                  <v-btn :disabled="true"  v-on:click="onCreateUsuario">
+                    
                     <v-icon left light>arrow_forward</v-icon>
                     Adiciona Usuario
                   </v-btn>
 </v-flex>
 </v-layout>
+<v-flex xs10 offset-xs1 >
+    <v-data-table
+        :headers="headersAdmins"
+        :items="admins"
+        hide-actions
+        class="elevation-1"
+      >
+        <template slot="items" slot-scope="props">
+          <td class="text-xs-left">{{ props.item.nome }}</td>
+          <td class="text-xs-left">{{ props.item.pagantes }}</td>
+        </template>
+      </v-data-table>
+    </v-flex>
 </v-layout>
 </template>
 
@@ -110,6 +124,10 @@
           {text: 'Pago', value: 'pago'},
           {text: 'Adicionado por', value: 'adicionadopor'},
           {text: '', value: 'apagar'}
+        ],
+        headersAdmins: [
+          {text: 'Nome', value: 'nome'},
+          {text: 'Nº de pagantes', value: 'pagantes'}
         ]
       }
     },
@@ -129,7 +147,11 @@
       usuariosCadastrados () {
       },
       admins () {
-        return this.$store.getters.loadedAdmins
+        var admins = this.$store.getters.loadedAdmins
+        for (let i = 0; i < admins.length; i++) {
+          admins[i].pagantes = 0
+        }
+        return admins
       },
       usuariosPendentes () {
         this.nroPendentes = 0
@@ -160,7 +182,7 @@
             user.link = user.email
           }
           user.index = index
-          if (user.addedby === this.usuarioLogado.id) {
+          /* if (user.addedby === this.usuarioLogado.id) {
             user.disabled = false
             if (user.pendente) {
               user.podeApagar = true
@@ -170,12 +192,19 @@
           } else {
             user.disabled = true
             user.podeApagar = false
-          }
+          } */
+          user.disabled = true
+          user.podeApagar = false
           if (user.pago) {
             this.nroPagos++
+            var indexAdmin = admins.findIndex((admin) => {
+              return admin.adminId === user.addedby
+            })
+            var adm = admins[indexAdmin]
+            adm.pagantes++
             if (user.situacao !== 'Enviado') {
               this.nroPagosNaoEnviados++
-              this.strPagosNaoEnviados += user.nomeOriginal + ', '
+             // this.strPagosNaoEnviados += user.nomeOriginal + ', '
             }
           } else {
             if (user.situacao === 'Enviado') {
@@ -183,7 +212,7 @@
               this.strEnviadosNaoPAgos += user.nomeOriginal + ', '
             }
           }
-          var indexAdmin = admins.findIndex((admin) => {
+          indexAdmin = admins.findIndex((admin) => {
             return admin.adminId === user.addedby
           })
           if (admins[indexAdmin] !== null && admins[indexAdmin] !== undefined) {

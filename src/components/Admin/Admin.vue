@@ -31,7 +31,7 @@
                            v-model="adminnome"
                         ></v-text-field>
                         </v-flex>
-                        <v-btn  v-on:click="addAdmin">
+                        <v-btn :disabled="true"  v-on:click="addAdmin">
                           <v-icon left light>arrow_forward</v-icon>
                           Adiciona Admin
                         </v-btn>

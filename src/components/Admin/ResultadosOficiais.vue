@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if = "gabarito !== null" fluid grid-list-md text-xs-center :id="'container'">
+  <v-container v-if = "segundaFase.length !== 0 && gabarito !== null && partidas.length !==0 && times !== null" fluid grid-list-md text-xs-center :id="'container'">
     <div>
       <v-card>
       <v-container
@@ -251,10 +251,10 @@
       if (this.$store.getters.loadedTimes.length === 0) {
         this.$store.dispatch('loadTimes')
       }
-      if (this.$store.getters.loadedPartidas.length === 0) {
+      if (this.$store.getters.loadedFases === null || this.$store.getters.loadedPartidas.length === 0 || this.$store.getters.loadedFases === undefined) {
         this.$store.dispatch('loadPartidas')
       }
-      if (this.$store.getters.loadedFases === null) {
+      if (this.$store.getters.loadedFases === null || this.$store.getters.loadedFases.length === 0) {
         this.$store.dispatch('loadFases')
       }
       // var ap = this.$store.getters.loadedMinhasApostas
@@ -287,9 +287,6 @@
     computed: {
       gabarito () {
         return this.$store.getters.loadedGabarito
-      },
-      loading () {
-        return this.$store.getters.loading
       },
       minhasApostasGrupos () {
        // console.log('apgrupos:')
@@ -334,8 +331,7 @@
         return partidas
       },
       segundaFase () {
-        var fases = this.$store.getters.loadedFases
-        return fases
+        return this.$store.getters.loadedFases
       },
       fases () {
         var fases = this.segundaFase
