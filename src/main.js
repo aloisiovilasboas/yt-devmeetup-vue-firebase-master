@@ -26,6 +26,12 @@ new Vue({
       databaseURL: 'https://bolaoafc2018.firebaseio.com',
       projectId: 'bolaoafc2018',
       storageBucket: 'bolaoafc2018.appspot.com'
+     // yt-dev-meetup abaixo
+      /* apiKey: 'AIzaSyBfaK1Ve-8aVRCquVum_mivOS1_mkD30bw',
+      authDomain: 'yt-dev-meetup-6a846.firebaseapp.com',
+      databaseURL: 'https://yt-dev-meetup-6a846.firebaseio.com',
+      projectId: 'yt-dev-meetup-6a846',
+      storageBucket: 'yt-dev-meetup-6a846.appspot.com' */
     })
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -34,11 +40,12 @@ new Vue({
     })
   //  this.$store.dispatch('loadUsuarios')
   //  this.$store.dispatch('loadTimes')
-  //  this.$store.dispatch('loadPartidas')
-  //  this.$store.dispatch('loadFases')
-  //  this.$store.dispatch('loadAdmins')
-   // this.$store.dispatch('loadApostas')
-  //  this.$store.dispatch('loadApostasSalvas')
-  //  this.$store.dispatch('loadGabarito')
+   // this.$store.dispatch('loadPartidas')
+   // this.$store.dispatch('loadFases')
+   // this.$store.dispatch('loadRanking')
+    this.$store.dispatch('loadAdmins')
+    //  this.$store.dispatch('loadApostas')
+    //  this.$store.dispatch('loadApostasSalvas')
+   // this.$store.dispatch('loadGabarito')
   }
 })

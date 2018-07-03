@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if = "$store.getters.loadedMinhasApostas !== null" fluid grid-list-md text-xs-center :id="'container'">
+  <v-container v-if = "$store.getters.loadedGabarito !== null && segundaFase.length !== 0 && partidas.length !==0 && times !== null" fluid grid-list-md text-xs-center :id="'container'">
     <div>
       <div class="display-1 nometitulo">
       Último jogo:
@@ -246,7 +246,13 @@
                 </v-layout>
               </v-container>
             </v-card>
-            <v-container v-if="(indexFase === 3)" fluid >
+          </v-flex>
+        </v-layout>
+      </v-tab-item>
+    </v-tabs-items>
+  </v-tabs>
+  <v-card>
+  <v-container fluid >
                 <v-layout row>
             <v-flex xs12 class="text-xs-center text-sm-center">
                       <v-btn v-on:click="salvarPalpites" large dark color="indigo darken-3" >
@@ -262,12 +268,7 @@
             </v-flex>
             </v-layout>
               </v-container>
-
-          </v-flex>
-        </v-layout>
-      </v-tab-item>
-    </v-tabs-items>
-  </v-tabs>
+              </v-card>
   </v-container>
   <v-container v-else>
     <div class = "text-xs-center">Você ainda não cadastrou seu palpite.</div>
@@ -285,13 +286,26 @@
       if (this.$store.getters.loadedGabarito === null) {
         this.$store.dispatch('loadGabarito')
       }
-      this.$store.dispatch('loadMinhasApostas')
+      if (this.$store.getters.loadedTimes.length === 0) {
+        this.$store.dispatch('loadTimes')
+      }
+      if (this.$store.getters.loadedFases === null || this.$store.getters.loadedPartidas.length === 0 || this.$store.getters.loadedFases === undefined) {
+        this.$store.dispatch('loadPartidas')
+      }
+      if (this.$store.getters.loadedFases === null || this.$store.getters.loadedFases.length === 0) {
+        this.$store.dispatch('loadFases')
+      }
       // var ap = this.$store.getters.loadedMinhasApostas
       //  console.log('ap')
       //  console.log(ap.fases)
       //  console.log(ap.grupos)
     },
     created () {
+     /*  this.listaDeTimes.push({nome: 'Oitavas', times: []})
+      this.listaDeTimes.push({nome: 'Quartas', times: []})
+      this.listaDeTimes.push({nome: 'Semifinal', times: []})
+      this.listaDeTimes.push({nome: 'Campeao', times: []})
+      this.listaDeTimes.push({nome: 'Final', times: []}) */
       var grupos = this.grupos
       grupos.forEach(grupo => {
         this.update(grupo)
@@ -300,6 +314,7 @@
     },
     data () {
       return {
+       // listaDeTimes: [],
         ultimojogoT1: null,
         ultimojogoT2: null,
         ultimojogoT1gols: null,
@@ -327,6 +342,7 @@
     },
     computed: {
       gabarito () {
+       // console.log(this.$store.getters.loadedGabarito)
         return this.$store.getters.loadedGabarito
       },
       loading () {
@@ -356,8 +372,8 @@
       timesAlfabeticos () {
         var x = this.$store.getters.loadedTimes
         var times = Object.assign([], x)
-        console.log(this.$store.getters.loadedTimes)
-        console.log(times)
+      //  console.log(this.$store.getters.loadedTimes)
+      //  console.log(times)
         times.sort(function (timea, timeb) {
           var nameA = timea.nome // ignore upper and lowercase
           var nameB = timeb.nome // ignore upper and lowercase
@@ -489,12 +505,6 @@
       },
       updateRadiosChange (fases, indexFase, partida, ntime) {
         partida.selecionado = ntime
-       /*  console.log(fases)
-        console.log(indexFase)
-        console.log(partida)
-        console.log(ntime)
-        console.log('fase: ' + indexFase + ' fn: ' + partida.numero)
-        console.log('fase seguinte: ' + Number(indexFase + 1) + ' p fase seguinte: ' + (Number(Math.ceil(partida.numero / 2) - 1)) + ' ntime: ' + Number(((partida.numero - 1) % 2) + 1))  */
         var timesel = {id: null, grupo: null, nome: null, imgurl: null}
         if (ntime === 1) {
           timesel = partida.time1
@@ -515,32 +525,39 @@
       updateRadios () {
         // (fases, indexFase, partida, ntime)
         var apFases = this.minhasApostasFases
+      //  this.listaDeTimes = []
         for (let indexFase = 0; indexFase < this.fases.length; indexFase++) {
           const fase = this.fases[indexFase]
           var indexF = apFases.findIndex((apf) => {
             return apf.id === fase.id
           })
           var apf = apFases[indexF]
+          // bloco matamata abaixo
+         /*  var nomeFase = fase.fase
+          var indexFaseMataMata = 0
+          if (nomeFase === 'Oitavas') {
+            indexFaseMataMata = 1
+          } else if (nomeFase === 'Quartas') {
+            indexFaseMataMata = 2
+          } else if (nomeFase === 'Semifinal') {
+            indexFaseMataMata = 4
+          } else if (nomeFase === 'Final') {
+            indexFaseMataMata = 3
+          }
+ */          // bloco matamata acima
+         // console.log(nomeFase)
+         // console.log(indexFaseMataMata)
           fase.partidas.forEach(partida => {
             var indexP = apf.partidas.findIndex((app) => {
               return app.numero === partida.numero
             })
             var app = apf.partidas[indexP]
             if (app.selecionado !== null && app.selecionado !== undefined) {
-              console.log('indexfase: ' + indexFase)
-              console.log('partida.nro-1: ' + Number(partida.numero - 1))
               partida.selecionado = app.selecionado
               var ntime = partida.selecionado
-              console.log('refss ')
-              console.log(this.$refs)
-              console.log('ntime: ' + Number(ntime))
-              console.log('radioxxx: \'' + 'radio' + indexFase + Number(partida.numero - 1) + ntime + '\'')
-              console.log('this.$refs.keys(): ')
-              console.log(Object.keys(this.$refs))
-              console.log('this.$refs[radioxxx]: ' + this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime])
               if (this.$refs['radio' + indexFase + Number(partida.numero - 1) + Number(ntime)] !== undefined) {
-                console.log('radio' + indexFase + partida.numero + ntime)
-                console.log(this.$refs['radio' + indexFase + Number(partida.numero - 1) + Number(ntime)][0])
+               // console.log('radio' + indexFase + partida.numero + ntime)
+               // console.log(this.$refs['radio' + indexFase + Number(partida.numero - 1) + Number(ntime)][0])
                 this.$refs['radio' + indexFase + Number(partida.numero - 1) + Number(ntime)][0].isActive = true
               }
               var timesel = {id: null, grupo: null, nome: null, imgurl: null}
@@ -549,8 +566,15 @@
               } else {
                 timesel = partida.time2
               }
+              // matamata
+             // this.listaDeTimes[indexFaseMataMata].times.push(timesel)
               if (fase.fase === 'Final') {
                 this.campeao = timesel
+                if (this.campeao.sigla !== undefined && this.campeao.sigla !== null) {
+              //    this.listaDeTimes.push({nome: 'Campeao', times: [this.campeao.sigla]})
+                } else {
+               //   this.listaDeTimes.push({nome: 'Campeao', times: []})
+                }
               } else {
                 if (Number(((partida.numero - 1) % 2) + 1) === 1) {
                   this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time1 = timesel
@@ -560,15 +584,10 @@
               }
               this.ligacaop += 1
             }
+           // console.log(this.listaDeTimes)
+          //  this.listaDeTimes.push({nome: nomeFase, times: timesFase})
           })
         }
-      },
-      atualiza () {
-        var grupos = this.grupos
-        grupos.forEach(grupo => {
-          this.update(grupo)
-        })
-        this.updateRadios()
       },
       calculaPosicoes (grupo) {
         grupo.times.sort(function (timea, timeb) {
@@ -603,16 +622,21 @@
         })
         this.primeiroA = grupo.times[0]
       },
+      // calculo das oitavas
       updateOitavas (grupo) {
+       // this.listaDeTimes[0]
         var partidasOitavas = this.fases[0].partidas
         var t1index = partidasOitavas.findIndex((p8) => {
           return p8.gt1 === grupo.l
         })
         partidasOitavas[t1index].time1 = grupo.times[0]
+      /*   this.listaDeTimes[0].times.push(grupo.times[0].sigla)
+        this.listaDeTimes[0].push */
         var t2index = partidasOitavas.findIndex((p8) => {
           return p8.gt2 === grupo.l
         })
         partidasOitavas[t2index].time2 = grupo.times[1]
+      //  this.listaDeTimes[0].times.push(grupo.times[1].sigla)
       },
       desmarcaOitavas (grupo) {
         var partidasOitavas = this.fases[0].partidas
@@ -738,12 +762,42 @@
        // console.log(gruposApostas)
        // console.log(this.fases)
         var fasesApostas = []
+        var matamata = []
+        matamata.push({nome: 'Oitavas', times: []})
+        matamata.push({nome: 'Quartas', times: []})
+        matamata.push({nome: 'Semifinal', times: []})
+        matamata.push({nome: 'Campeao', times: []})
+        matamata.push({nome: 'Final', times: []})
         this.fases.forEach(fase => {
           var faseAposta = {id: fase.id, partidas: []}
+          var nomeFase = fase.fase
+          var indexFaseMataMata = 0
+          if (nomeFase === 'Oitavas') {
+            indexFaseMataMata = 0
+          } else if (nomeFase === 'Quartas') {
+            indexFaseMataMata = 1
+          } else if (nomeFase === 'Semifinal') {
+            indexFaseMataMata = 2
+          } else if (nomeFase === 'Final') {
+            indexFaseMataMata = 4
+          }
           fase.partidas.forEach(partida => {
+            if (partida.time1.sigla !== undefined && partida.time1.sigla !== null) {
+              matamata[indexFaseMataMata].times.push(partida.time1.sigla)
+            }
+            if (partida.time2.sigla !== undefined && partida.time2.sigla !== null) {
+              matamata[indexFaseMataMata].times.push(partida.time2.sigla)
+            }
             if (partida.selecionado !== null && partida.selecionado !== undefined) {
               var partidaAposta = {numero: partida.numero, selecionado: partida.selecionado}
               faseAposta.partidas.push(partidaAposta)
+              if (fase.fase === 'Final') {
+                if (partida.selecionado === 1) {
+                  matamata[3].times.push(partida.time1.sigla)
+                } else if (partida.selecionado === 2) {
+                  matamata[3].times.push(partida.time2.sigla)
+                }
+              }
             } else {
               var partidaApostanro = {numero: partida.numero}
               faseAposta.partidas.push(partidaApostanro)
@@ -751,9 +805,9 @@
           })
           fasesApostas.push(faseAposta)
         })
-       // console.log(fasesApostas)
-        this.$store.dispatch('cadastraGabarito', {grupos: gruposApostas, fases: fasesApostas, ultimojogoT1gols: this.ultimojogoT1gols, ultimojogoT2gols: this.ultimojogoT2gols, ultimojogoT1: this.ultimojogoT1.id, ultimojogoT2: this.ultimojogoT2.id})
-        this.$router.push('/Ranking')
+        console.log(matamata)
+        this.$store.dispatch('cadastraGabarito', {grupos: gruposApostas, fases: fasesApostas, ultimojogoT1gols: this.ultimojogoT1gols, ultimojogoT2gols: this.ultimojogoT2gols, ultimojogoT1: this.ultimojogoT1.id, ultimojogoT2: this.ultimojogoT2.id, listaDeTimes: matamata})
+        this.$router.push('/RankingAdmin')
       },
       limparGabarito () {
        // console.log(this.grupos)
@@ -776,7 +830,7 @@
           fasesApostas.push(faseAposta)
         })
        // console.log(fasesApostas)
-        this.$store.dispatch('cadastraGabarito', {grupos: gruposApostas, fases: fasesApostas, ultimojogoT1: null, ultimojogoT2: null, ultimojogoT1gols: null, ultimojogoT2gols: null})
+        this.$store.dispatch('cadastraGabarito', {grupos: gruposApostas, fases: fasesApostas, ultimojogoT1: null, ultimojogoT2: null, ultimojogoT1gols: null, ultimojogoT2gols: null, listaDeTimes: []})
         this.$router.push('Ranking')
       }
     }

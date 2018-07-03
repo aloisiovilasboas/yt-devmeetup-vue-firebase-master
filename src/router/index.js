@@ -4,7 +4,9 @@ import Home from '@/components/Home'
 import Regras from '@/components/Regras'
 import Sobre from '@/components/Sobre'
 import Perfil from '@/components/User/Perfil'
-import Ranking from '@/components/User/Ranking'
+import PerfilAdmin from '@/components/Admin/PerfilAdmin'
+import RankingAdmin from '@/components/User/RankingAdmin'
+import Ranking from '@/components/User/RankingPub'
 import Apostas from '@/components/User/Apostas'
 import ApostasCadastradas from '@/components/User/ApostasCadastradas'
 import Admin from '@/components/Admin/Admin'
@@ -79,6 +81,12 @@ export default new Router({
       component: Ranking
     },
     {
+      path: '/rankingadmin',
+      name: 'RankingAdmin',
+      component: RankingAdmin,
+      beforeEnter: AuthGuard
+    },
+    {
       path: '/cadastre/:id',
       name: 'Cadastre',
       props: true,
@@ -89,6 +97,12 @@ export default new Router({
       name: 'Perfil',
       props: true,
       component: Perfil
+    },
+    {
+      path: '/perfiladmin/:id',
+      name: 'PerfilAdmin',
+      props: true,
+      component: PerfilAdmin
     }
   ],
   mode: 'history'

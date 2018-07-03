@@ -40,7 +40,7 @@
 
                    <v-card class="margin" color="grey lighten-3">  
                     <v-flex > 
-                    <v-btn  :to="'/Ranking'">
+                    <v-btn  :to="'/Rankingadmin'">
                       <v-icon left light>arrow_forward</v-icon>
                         Ranking
                     </v-btn>
@@ -81,6 +81,20 @@
 
 <script>
   export default {
+    beforeCreate () {
+      if (this.$store.getters.loadedGabarito === null) {
+        this.$store.dispatch('loadGabarito')
+      }
+      if (this.$store.getters.loadedTimes.length === 0) {
+        this.$store.dispatch('loadTimes')
+      }
+      if (this.$store.getters.loadedFases === null || this.$store.getters.loadedPartidas.length === 0 || this.$store.getters.loadedFases === undefined) {
+        this.$store.dispatch('loadPartidas')
+      }
+      if (this.$store.getters.loadedFases === null || this.$store.getters.loadedFases.length === 0) {
+        this.$store.dispatch('loadFases')
+      }
+    },
     data () {
       return {
         adminid: '',

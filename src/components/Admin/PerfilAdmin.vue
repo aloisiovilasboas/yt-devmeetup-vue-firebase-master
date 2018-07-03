@@ -1,5 +1,10 @@
 <template>
   <v-container v-if = "!loading && $store.getters.loadedApostasPerfil !== undefined && $store.getters.loadedApostasPerfil !== null && segundaFase.length !== 0 && partidas.length !==0 && times !== null" fluid grid-list-md text-xs-center :id="'container'">
+    <div>
+    <v-alert :value="true" type="success">
+      Perfil Admin
+    </v-alert>
+    </div>
     <div class="display-1 nometitulo" >{{usuarioNome}}</div>
     <v-tabs
         dark
@@ -195,6 +200,23 @@
           </v-tab-item>
         </v-tabs-items>
   </v-tabs>
+  <!-- <v-card> 
+  <v-container fluid >
+                <v-layout row>
+            <v-flex xs12 class="text-xs-center text-sm-center">
+                      <v-btn v-on:click="updatePalpites" large dark color="indigo darken-3" >
+                       <v-icon>send</v-icon>
+                       <span> Update Apostas</span>
+                       </v-btn>
+            </v-flex>
+            </v-layout>
+            <div v-if="matamataok">
+    <v-alert :value="true" type="success">
+     matamata ok
+    </v-alert>
+    </div>
+              </v-container>
+  </v-card> -->
  </v-container>
 <v-container v-else>
     <div class = "text-xs-center"> <v-progress-circular :size="50" indeterminate color="red"></v-progress-circular></div>
@@ -233,6 +255,8 @@
     }, */
     data () {
       return {
+      //  matamataok: false,
+        listaDeTimes: [],
         ex7: 'red',
         ex8: 'primary',
         selecionado: null,
@@ -273,7 +297,7 @@
         return this.$store.getters.loadedApostasPerfil
       },
       usuarioNome () {
-        console.log(this.apostasUsuario)
+       // console.log(this.apostasUsuario)
         if (this.apostasUsuario !== undefined && this.apostasUsuario !== null) {
           var u = this.apostasUsuario.usuario
           var nome = u.nome
@@ -392,6 +416,14 @@
       }
     }, */
     methods: {
+      updatePalpites () {
+       // console.log(this.grupos)
+      //  console.log(this.listaDetimes)
+      //  console.log(this.id)
+        this.$store.dispatch('updateApostas', {id: this.id, apostas: this.listaDetimes})
+      //  this.matamataok = true
+       // this.$router.push('/rankingAdmin')
+      },
       toTitleCase (str) {
         var s = str.replace(
           /([^\W_]+[^\s-]*) */g,
@@ -446,12 +478,16 @@
       updateRadios () {
         // (fases, indexFase, partida, ntime)
         var apFases = this.minhasApostasFases
+        this.listaDetimes = []
         for (let indexFase = 0; indexFase < this.fases.length; indexFase++) {
           const fase = this.fases[indexFase]
           var indexF = apFases.findIndex((apf) => {
             return apf.id === fase.id
           })
           var apf = apFases[indexF]
+          var nomeFase = fase.fase
+          var timesFase = []
+         // console.log(nomeFase)
           fase.partidas.forEach(partida => {
             var indexP = apf.partidas.findIndex((app) => {
               return app.numero === partida.numero
@@ -464,6 +500,8 @@
              // console.log(this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime][0])
               this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime][0].isActive = true
             }
+            timesFase.push(partida.time1.sigla)
+            timesFase.push(partida.time2.sigla)
             var timesel = {id: null, grupo: null, nome: null, imgurl: null}
             if (ntime === 1) {
               timesel = partida.time1
@@ -472,6 +510,10 @@
             }
             if (fase.fase === 'Final') {
               this.campeao = timesel
+              this.listaDetimes.push({nome: 'Campeao', times: [this.campeao.sigla]})
+            //  console.log(this.listaDetimes)
+            //  console.log(this.campeao)
+        //      this.geraListasDeTimes(apFases, this.campeao)
             } else {
               if (Number(((partida.numero - 1) % 2) + 1) === 1) {
                 this.fases[Number(indexFase + 1)].partidas[(Number(Math.ceil(partida.numero / 2) - 1))].time1 = timesel
@@ -481,6 +523,7 @@
             }
             this.ligacaop += 1
           })
+          this.listaDetimes.push({nome: nomeFase, times: timesFase})
         }
       },
       calculaPosicoes (grupo) {

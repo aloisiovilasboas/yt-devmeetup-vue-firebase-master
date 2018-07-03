@@ -96,6 +96,14 @@
 
 <script>
   export default {
+    beforeCreate () {
+      if (this.$store.getters.loadedApostasSalvas === undefined || this.$store.getters.loadedApostasSalvas.length === 0) {
+        this.$store.dispatch('loadApostasSalvas')
+      }
+      if (this.$store.getters.loadedUsuarios === undefined || this.$store.getters.loadedUsuarios.length === 0) {
+        this.$store.dispatch('loadUsuarios')
+      }
+    },
     data () {
       return {
        /*  adminsHardCoded: [
@@ -250,6 +258,20 @@
       onCreateUsuario () {
         this.$store.dispatch('createUsuario', this.novoUsuario)
         this.$router.push('/Usuarios')
+      },
+      apostas3 () {
+        var usuarios = this.users
+        usuarios.forEach(user => {
+          if (!user.pendente) {
+            var indexAposta = this.apostas.findIndex((aposta) => {
+              return aposta.usuarioid === user.id
+            })
+            if (indexAposta !== -1) {
+              var aposta = this.apostas[indexAposta]
+              this.$store.dispatch('cadastraApostas3', {grupos: aposta.grupos, fases: aposta.fases, usuarioid: user.id})
+            }
+          }
+        })
       },
       deleteUsuario (usuario) {
         this.$store.dispatch('deleteUsuario', {id: usuario.id})

@@ -7,41 +7,18 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
   state: {
     gabarito: null,
+    ranking: null,
+    usuariosRanking: [],
     minhasApostas: null,
+    apostasPerfil: null,
+    idPerfil: null,
     loadedApostas: [],
+    loadedApostasNovas: [],
     loadedApostasSalvas: [],
     loadedAdmins: [],
     loadedUsuarios: [],
-    loadedMeetups: [
-      {
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/4/47/New_york_times_square-terabass.jpg',
-        id: 'afajfjadfaadfa323',
-        title: 'Meetup in New York',
-        date: new Date(),
-        location: 'New York',
-        description: 'New York, New York!'
-      },
-      {
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/7a/Paris_-_Blick_vom_gro%C3%9Fen_Triumphbogen.jpg',
-        id: 'aadsfhbkhlk1241',
-        title: 'Meetup in Paris',
-        date: new Date(),
-        location: 'Paris',
-        description: 'It\'s Paris!'
-      }
-    ],
+    loadedMeetups: [],
     loadedTimes: [],
-    /*
-      {
-        nome: 'Arabia',
-        grupo: 'A',
-        imgurl: 'https://firebasestorage.googleapis.com/v0/b/yt-dev-meetup-6a846.appspot.com/o/flags%2Farabia.png?alt=media&token=bd495d4a-575f-4ea2-b5e5-f115350aed02'
-      },
-      {
-        nome: 'Russia',
-        grupo: 'A',
-        imgurl: 'https://firebasestorage.googleapis.com/v0/b/yt-dev-meetup-6a846.appspot.com/o/flags%2Frussia.png?alt=media&token=fac5c120-2ad1-4b5f-ac74-189d02581254'
-      } */
     loadedPartidas: [],
     loadedFases: [],
     user: null,
@@ -63,6 +40,11 @@ export const store = new Vuex.Store({
     },
     setLoadedUsuarios (state, payload) {
       state.loadedUsuarios = payload
+    },
+    setUsuario (state, payload) {
+      // console.log('paulo: ')
+      // console.log(payload)
+      state.usuariosRanking[payload.id] = {payload}
     },
     setLoadedTimes (state, payload) {
       state.loadedTimes = payload
@@ -105,10 +87,27 @@ export const store = new Vuex.Store({
      // console.log(payload)
       state.minhasApostas = payload
     },
+    setApostasUsuario (state, payload) {
+      // console.log('paulo: ')
+      // console.log(payload)
+      state.apostasPerfil = {grupos: payload.grupos, fases: payload.fases, usuario: payload.usuario}
+    //  console.log(state.apostasPerfil)
+      state.loadedApostasNovas[payload.id] = {grupos: payload.grupos, fases: payload.fases, usuario: payload.usuario}
+    },
+    setApostasPerfil (state, payload) {
+      // console.log('paulo: ')
+      // console.log(payload)
+      state.apostasPerfil = state.loadedApostasNovas[payload.id]
+    },
     setaGabarito (state, payload) {
       // console.log('paulo: ')
       // console.log(payload)
       state.gabarito = payload
+    },
+    setaRanking (state, payload) {
+      // console.log('paulo: ')
+      // console.log(payload)
+      state.ranking = payload
     },
     setUser (state, payload) {
       state.user = payload
@@ -176,7 +175,7 @@ export const store = new Vuex.Store({
     },
     loadApostasSalvas ({commit}) {
       commit('setLoading', true)
-      firebase.database().ref('apostasSalvas').once('value')
+      firebase.database().ref('apostas3').once('value')
         .then((data) => {
           const apostas = []
           const obj = data.val()
@@ -185,6 +184,7 @@ export const store = new Vuex.Store({
               id: key,
               fases: obj[key].fases,
               grupos: obj[key].grupos,
+              matamata: obj[key].matamata,
               usuarioid: obj[key].usuarioid
             })
           }
@@ -213,12 +213,90 @@ export const store = new Vuex.Store({
           }
         )
     },
+    loadApostasUsuario ({commit, getters}, payload) {
+      commit('setLoading', true)
+      firebase.database().ref('apostas3/' + payload.id).once('value')
+        .then((data) => {
+          var apostas = {id: payload.id, grupos: data.val().grupos, fases: data.val().fases}
+          firebase.database().ref('usuarios/' + payload.id).once('value')
+            .then((data) => {
+              const usuario = {
+                id: payload.id,
+                nomeOriginal: data.val().nomeOriginal,
+                nome: data.val().nome
+              }
+              apostas.usuario = usuario
+              commit('setApostasUsuario', apostas)
+              commit('setLoading', false)
+             // commit('setUsuario', usuario)
+          //    commit('setLoading', false)
+            })
+            .catch(
+              (error) => {
+                console.log(error)
+                commit('setLoading', false)
+              }
+            )
+        })
+        .catch(
+          (error) => {
+            console.log(error)
+            commit('setLoading', false)
+          }
+        )
+    },
+    loadUsuario ({commit, getters}, payload) {
+    //  commit('setLoading', true)
+      firebase.database().ref('usuarios/' + payload.id).once('value')
+        .then((data) => {
+          const usuario = {
+            id: payload.id,
+            nomeOriginal: data.val().nomeOriginal,
+            nome: data.val().nome,
+            email: data.val().email,
+            pendente: data.val().pendente,
+            pago: data.val().pago,
+            addedby: data.val().addedby
+          }
+          commit('setUsuario', usuario)
+      //    commit('setLoading', false)
+        })
+        .catch(
+          (error) => {
+            console.log(error)
+            commit('setLoading', false)
+          }
+        )
+    },
     loadGabarito ({commit}) {
       commit('setLoading', true)
       firebase.database().ref('gabarito').once('value')
         .then((data) => {
-          const gabarito = {grupos: data.val().grupos, fases: data.val().fases, ultimojogoT1: data.val().ultimojogoT1, ultimojogoT2: data.val().ultimojogoT2, ultimojogoT1gols: data.val().ultimojogoT1gols, ultimojogoT2gols: data.val().ultimojogoT2gols}
+          const gabarito = {grupos: data.val().grupos, fases: data.val().fases, ultimojogoT1: data.val().ultimojogoT1, ultimojogoT2: data.val().ultimojogoT2, ultimojogoT1gols: data.val().ultimojogoT1gols, ultimojogoT2gols: data.val().ultimojogoT2gols, matamata: data.val().matamata}
           commit('setaGabarito', gabarito)
+          commit('setLoading', false)
+        })
+        .catch(
+          (error) => {
+            console.log(error)
+            commit('setLoading', false)
+          }
+        )
+    },
+    loadRanking ({commit}) {
+      commit('setLoading', true)
+      firebase.database().ref('ranking').once('value')
+        .then((data) => {
+          const ranking = {
+            jogadores: data.val().jogadores,
+            ultimoJogoT1id: data.val().ultimoJogoT1id,
+            ultimoJogoT2id: data.val().ultimoJogoT2id,
+            ultimoJogoT1gols: data.val().ultimoJogoT1gols,
+            ultimoJogoT2gols: data.val().ultimoJogoT2gols,
+            temMensagem: data.val().temMensagem,
+            mensagem: data.val().mensagem
+          }
+          commit('setaRanking', ranking)
           commit('setLoading', false)
         })
         .catch(
@@ -529,6 +607,22 @@ export const store = new Vuex.Store({
         console.log(error)
       })
     },
+    cadastraApostas3 ({commit, getters}, payload) {
+      var apostas = {grupos: payload.grupos, fases: payload.fases, usuarioid: payload.usuarioid}
+      firebase.database().ref('apostas3/' + payload.usuarioid).set(apostas).then((data) => {
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    },
+    updateApostas ({commit, getters}, payload) {
+      var apostas = payload.apostas
+      firebase.database().ref('apostas3/' + payload.id + '/matamata').set(apostas).then((data) => {
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    },
     salvaApostas ({commit, getters}, payload) {
       firebase.database().ref('apostas').once('value')
         .then((data) => {
@@ -556,11 +650,23 @@ export const store = new Vuex.Store({
         )
     },
     cadastraGabarito ({commit, getters}, payload) {
-      var gabarito = {grupos: payload.grupos, fases: payload.fases, ultimojogoT1: payload.ultimojogoT1, ultimojogoT2: payload.ultimojogoT2, adminid: store.getters.user.id, ultimojogoT1gols: payload.ultimojogoT1gols, ultimojogoT2gols: payload.ultimojogoT2gols}
+      var gabarito = {grupos: payload.grupos, fases: payload.fases, ultimojogoT1: payload.ultimojogoT1, ultimojogoT2: payload.ultimojogoT2, adminid: store.getters.user.id, ultimojogoT1gols: payload.ultimojogoT1gols, ultimojogoT2gols: payload.ultimojogoT2gols, matamata: payload.listaDeTimes}
       firebase.database().ref('gabarito').set(gabarito).then((data) => {
         console.log(data)
         commit('setaGabarito', {
           ...gabarito
+        })
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    },
+    cadastraRanking ({commit, getters}, payload) {
+      var ranking = payload
+      firebase.database().ref('ranking').set(ranking).then((data) => {
+        console.log(data)
+        commit('setaRanking', {
+          ...ranking
         })
       })
       .catch((error) => {
@@ -712,8 +818,17 @@ export const store = new Vuex.Store({
     }
   },
   getters: {
+    loadedApostasPerfil (state) {
+      return state.apostasPerfil
+    },
     loadedApostas (state) {
       return state.loadedApostas
+    },
+    loadedApostasNovas (state) {
+      return state.loadedApostasNovas
+    },
+    loadedUsuariosRanking (state) {
+      return state.usuariosRanking
     },
     loadedApostasSalvas (state) {
       return state.loadedApostasSalvas
@@ -743,6 +858,9 @@ export const store = new Vuex.Store({
     },
     loadedGabarito (state) {
       return state.gabarito
+    },
+    loadedRanking (state) {
+      return state.ranking
     },
     featuredMeetups (state, getters) {
       return getters.loadedMeetups.slice(0, 5)

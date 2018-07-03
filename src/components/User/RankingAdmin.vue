@@ -1,5 +1,5 @@
 <template>
-<v-container v-if = "jogadores !== undefined && jogadores.length !== 0 && gabarito !== null && gabarito !== undefined" fluid grid-list-md text-xs-center :id="'container'">
+<v-container v-if = "jogadores !== undefined && jogadores.length !== 0 && gabarito !== null && gabarito !== undefined && partidas !== undefined && times !== null" fluid grid-list-md text-xs-center :id="'container'">
 <v-layout column >
   <v-layout column >
     <v-flex xs12 >
@@ -23,9 +23,9 @@
                <v-flex xs4 sm2 lg1 >
                  <v-layout row align-items align-center coluna1 justify-space-between>
                     <v-avatar :size="40" :tile="true">
-                        <img :src="ultimoJogot1.imgurl">
+                        <img :src="ultimoJogoT1.imgurl">
                     </v-avatar>
-                    <div  class="text-xs-right subheading"> {{ultimoJogot1.sigla}}</div>
+                    <div  class="text-xs-right subheading"> {{ultimoJogoT1.sigla}}</div>
                     <div  class="text-xs-right subheading"> {{ultimoJogoT1gols}}</div>
                  </v-layout>
               </v-flex>
@@ -35,9 +35,9 @@
               <v-flex xs4 sm2 lg1>     
                  <v-layout row align-center reverse coluna1 justify-space-between>
                      <v-avatar :size="40" :tile="true">
-                         <img :src="ultimoJogot2.imgurl">
+                         <img :src="ultimoJogoT2.imgurl">
                      </v-avatar>
-                    <div  class="text-xs-right subheading"> {{ultimoJogot2.sigla}}</div>
+                    <div  class="text-xs-right subheading"> {{ultimoJogoT2.sigla}}</div>
                     <div  class="text-xs-right subheading"> {{ultimoJogoT2gols}}</div>
                  </v-layout>
             </v-flex>         
@@ -50,8 +50,16 @@
       </v-layout>
       </v-container>
       </v-card>
+      <div>
+        <input type="checkbox" label="asdas" v-model="temMensagem" >
+        Publicar informação?
+            </div>
+      <v-alert :value="true" type="info">
 
-      <v-btn :to="'/Resultados'" round color="primary" dark>Resultados dos Jogos</v-btn>
+       <input v-model="mensagem" placeholder="Digite a informação aqui">
+      </v-alert>
+
+      <v-btn v-on:click="publicaRanking" round color="red" dark>PUBLICA RANKING</v-btn>
 
       
     </div>
@@ -70,12 +78,40 @@
         hide-actions
         class="elevation-1"
       >
-        <template slot="items" slot-scope="props">
-          <tr class="mouseoverlink" >
+        <template slot="items" slot-scope="props" >
+          <tr class="mouseoverlink" @click="onLoadPerfil(props.item.id)" >
        <!--     <td class="text-xs-left">
               <router-link :to="`/perfil/${props.item.id}`" tag="td">{{ props.item.i }}</router-link>
             </td> -->
-            <td class="text-xs-left">
+           <td class="text-xs-left">
+              {{ props.item.pos }} 
+            </td>
+            <td class="text-xs-left nomeusuarior ">
+              {{ props.item.nome }}
+            </td>
+            <td class="text-xs-left pontuacaostyle">
+              {{ props.item.pontuacao }}
+            </td>
+            <td class="text-xs-left pontuacaostyle">
+              {{ props.item.grupos }}
+            </td>
+            <td class="text-xs-left pontuacaostyle">
+              {{ props.item.oitavas }}
+            </td>
+            <td class="text-xs-left pontuacaostyle">
+              {{ props.item.quartas }}
+            </td>
+            <td class="text-xs-left pontuacaostyle">
+              {{ props.item.semis }}
+            </td>
+            <td class="text-xs-left pontuacaostyle">
+              {{ props.item.final }}
+            </td>
+            <td class="text-xs-left pontuacaostyle">
+              {{ props.item.campeao }}
+            </td>
+
+           <!-- <td class="text-xs-left">
               <router-link :to="`/perfil/${props.item.id}`" tag="td">{{ props.item.pos }}</router-link>
             </td>
             <td class="text-xs-left nomeusuarior ">
@@ -84,6 +120,7 @@
             <td class="text-xs-left">
               <router-link :to="`/perfil/${props.item.id}`" tag="td">{{ props.item.pontuacao }}</router-link>
             </td>
+            -->
           </tr>
         </template>
       </v-data-table>
@@ -113,21 +150,17 @@
       if (this.$store.getters.loadedTimes === undefined || this.$store.getters.loadedTimes.length === 0) {
         this.$store.dispatch('loadTimes')
       }
-      // var ap = this.$store.getters.loadedMinhasApostas
-      //  console.log('ap')
-      //  console.log(ap.fases)
-      //  console.log(ap.grupos)
+      if (this.$store.getters.loadedPartidas.length === 0 || this.$store.getters.loadedPartidas === undefined) {
+        this.$store.dispatch('loadPartidas')
+      }
+      if (this.$store.getters.loadedFases === null || this.$store.getters.loadedFases.length === 0) {
+        this.$store.dispatch('loadFases')
+      }
     },
     data () {
       return {
-       /*  adminsHardCoded: [
-          {id: 'mDriYC0MQ2f8O23o4zDRWqxvmAO2', nome: 'Aloísio'},
-          {id: '0VHPWAJJGbgOWtSG6yv31BDwPSs1', nome: 'Maiara'},
-          {id: 'MI8UmWIIhbMJE4NH1hhLYqp3N6J2', nome: 'Marcelinho'},
-          {id: 'hA0Ahiin6CY6QpjI15vyjwJdMID2', nome: 'Jorginho'},
-          {id: '04DLvyULzhg04d6NXtsPw227CUQ2', nome: 'Marcel'}
-        ], */
-        novoUsuario: '',
+        mensagem: null,
+        temMensagem: false,
         grupo: '',
         nroPendentes: 0,
         nroCadastrados: 0,
@@ -138,12 +171,52 @@
         //  {text: 'Nº', value: 'i'},
           {text: 'Posição', value: 'pos'},
           {text: 'Nome', value: 'nome'},
-          {text: 'Pontos', value: 'pontuacao'}
+          {text: 'P', value: 'pontuacao'},
+          {text: 'G', value: 'grupos'},
+          {text: 'O', value: 'oitavas'},
+          {text: 'Q', value: 'quartas'},
+          {text: 'S', value: 'semis'},
+          {text: 'F', value: 'final'},
+          {text: 'C', value: 'campeao'}
          // {text: 'Situação', value: 'situacao'}
         ]
       }
     },
     methods: {
+      publicaRanking () {
+         // console.log(this.grupos)
+        var jogadoresR = []
+        this.jogadores.forEach(jogador => {
+          var j =
+            {
+              nome: jogador.nome,
+              pontuacao: jogador.pontuacao,
+              id: jogador.id,
+              grupos: jogador.grupos,
+              oitavas: jogador.oitavas,
+              quartas: jogador.quartas,
+              semis: jogador.semis,
+              final: jogador.final,
+              campeao: jogador.campeao
+            }
+          jogadoresR.push(j)
+        })
+       // console.log(fasesApostas)
+        console.log(this.mensagem)
+        this.$store.dispatch('cadastraRanking', {
+          jogadores: jogadoresR,
+          ultimoJogoT1id: this.ultimoJogoT1.id,
+          ultimoJogoT2id: this.ultimoJogoT2.id,
+          ultimoJogoT1gols: this.ultimoJogoT1gols,
+          ultimoJogoT2gols: this.ultimoJogoT2gols,
+          temMensagem: this.temMensagem,
+          mensagem: this.mensagem
+        })
+        this.$router.push('/Ranking')
+      },
+      onLoadPerfil (id) {
+        this.$router.push('/perfiladmin/' + id)
+      },
       toTitleCase (str) {
         var s = str.replace(
           /([^\W_]+[^\s-]*) */g,
@@ -168,7 +241,21 @@
         }
         return pontuacao
       },
-      calculaPontuacao (jogadores) {
+      calculaPontuacaoMataMata (jogador, gabarito) {
+       // console.log(jogador.times)
+       // console.log(gabarito.times)
+        var p = 0
+        if (gabarito.times !== undefined && gabarito.times !== null) {
+          gabarito.times.forEach(time => {
+            if (jogador.times.includes(time)) {
+              p += 1
+            //  console.log(time)
+            }
+          })
+        }
+        return p
+      },
+      calculaColocacao (jogadores) {
         jogadores.sort(function (jogadorA, jogadorB) {
           if (jogadorB.pontuacao - jogadorA.pontuacao === 0) {
             var nameA = jogadorA.nome // ignore upper and lowercase
@@ -202,15 +289,6 @@
           jogador.i = i
           jogador.pos = pos
         })
-       // var posicao = 1
-       // jogadores[0].pos = 1
-        /* for (let i = 1; i < jogadores.length; i++) {
-          if (jogadores[i].pontuacao === jogadores[i - 1].pontuacao) {
-            jogadores[i].pos = posicao
-          } else {
-            jogadores[i].pos = i + 1
-          }
-        } */
       }
     },
     computed: {
@@ -226,20 +304,46 @@
         })
         return times
       },
-      ultimoJogot1 () {
+      partidas () {
+        var partidas = this.$store.getters.loadedPartidas
+        return partidas
+      },
+      segundaFase () {
+        var fases = this.$store.getters.loadedFases
+        return fases
+      },
+      fases () {
+        var fases = this.segundaFase
+        for (let i = 0; i < fases.length; i++) {
+          for (let j = 0; j < fases[i].partidas.length; j++) {
+            var time1 = {id: null, grupo: null, nome: null, imgurl: null}
+            var time2 = {id: null, grupo: null, nome: null, imgurl: null}
+            fases[i].partidas[j].time1 = time1
+            fases[i].partidas[j].time2 = time2
+            fases[i].partidas[j].time1.nome = this.segundaFase[i].partidas[j].time1GP
+            fases[i].partidas[j].time2.nome = this.segundaFase[i].partidas[j].time2GP
+            fases[i].partidas[j].disabled = true
+            fases[i].partidas[j].selecionado = null
+          }
+        }
+        return fases
+      },
+      ultimoJogoT1 () {
         var it = this.times.findIndex((t1) => {
           return t1.id === this.gabarito.ultimojogoT1
         })
+       // console.log(this.times[it])
         if (it === -1) {
           return {nome: '', imgurl: ''}
         } else {
           return this.times[it]
         }
       },
-      ultimoJogot2 () {
+      ultimoJogoT2 () {
         var it = this.times.findIndex((t2) => {
           return t2.id === this.gabarito.ultimojogoT2
         })
+       // console.log(this.times[it])
         if (it === -1) {
           return {nome: '', imgurl: ''}
         } else {
@@ -289,17 +393,15 @@
           }
         })
         if (this.gabarito !== undefined && this.gabarito !== null) {
+        //  console.log(this.gabarito.gruposOrganizados)
+        //  console.log(this.gabarito.grupos)
+        //  console.log(this.gabarito.fasesOrganizadas)
+         // console.log(this.gabarito.gruposOrganizados)
           filtrados.forEach(jogador => {
             var pontos = 0
             for (let i = 0; i < this.gabarito.grupos.length; i++) {
               for (let j = 0; j < this.gabarito.grupos[j].partidas.length; j++) {
-               // console.log(this.gabarito.grupos[i].partidas[j])
                 if (this.gabarito.grupos[i].partidas[j].time1gols !== null && this.gabarito.grupos[i].partidas[j].time1gols !== undefined) {
-                //  console.log(jogador.apostas.grupos[i].partidas[j])
-                // console.log(jogador.nome)
-                // console.log(jogador.apostas.grupos[i].partidas[j])
-                // console.log('gabarito')
-                // console.log(this.gabarito.grupos[i].partidas[j])
                   var ipart = jogador.apostas.grupos[i].partidas.findIndex((partida) => {
                     return partida.id === this.gabarito.grupos[i].partidas[j].id
                   })
@@ -308,9 +410,23 @@
                 }
               }
             }
-            jogador.pontuacao = pontos
+            jogador.grupos = pontos
+           // console.log(this.gabarito.matamata[0])
+            var oitavas = this.calculaPontuacaoMataMata(jogador.apostas.matamata[0], this.gabarito.matamata[0]) * 8
+            jogador.oitavas = oitavas
+            var quartas = this.calculaPontuacaoMataMata(jogador.apostas.matamata[1], this.gabarito.matamata[1]) * 10
+            jogador.quartas = quartas
+            var semis = this.calculaPontuacaoMataMata(jogador.apostas.matamata[2], this.gabarito.matamata[2]) * 15
+            jogador.semis = semis
+            var final = this.calculaPontuacaoMataMata(jogador.apostas.matamata[4], this.gabarito.matamata[4]) * 20
+            jogador.final = final
+            var campeao = this.calculaPontuacaoMataMata(jogador.apostas.matamata[3], this.gabarito.matamata[3]) * 30
+            jogador.campeao = campeao
+            jogador.pontuacao = pontos + oitavas + quartas + semis + final + campeao
+           // jogador.pontuacao = pontos
           })
-          this.calculaPontuacao(filtrados)
+         // console.log(filtrados)
+          this.calculaColocacao(filtrados)
           this.pagination.sortBy = 'i'
          // console.log(filtrados)
           return filtrados
@@ -331,6 +447,9 @@ a:link {
 }
 .table, .nomeusuarior, .application .theme--light.table {
     font-weight: bold;
+}
+.table, .pontuacaostyle, .application .theme--light.table {
+    min-width: 50px;
 }
 /* table.table tbody td, .nomeusuarior {
   color: rgba(0,0,100,0.87);

@@ -462,7 +462,7 @@
             if (app.selecionado !== undefined && app.selecionado !== null) {
               partida.selecionado = app.selecionado
               var ntime = partida.selecionado
-              console.log(this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime])
+             // console.log(this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime])
               if (this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime] !== undefined) {
               // console.log('radio' + indexFase + partida.numero + ntime)
               // console.log(this.$refs['radio' + indexFase + Number(partida.numero - 1) + ntime][0])
@@ -599,7 +599,7 @@
           }
         }
         if (completo) {
-          console.log('Completo!!!!!!')
+        //  console.log('Completo!!!!!!')
           this.updateOitavas(grupo)
         }
         this.ligacaop += 1
