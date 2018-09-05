@@ -21,17 +21,17 @@ new Vue({
   render: h => h(App),
   created () {
     firebase.initializeApp({
-      apiKey: 'AIzaSyCKs49igWzbq7boGVJOsUBI098EHn74JVs',
+      /* apiKey: 'AIzaSyCKs49igWzbq7boGVJOsUBI098EHn74JVs',
       authDomain: 'bolaoafc2018.firebaseapp.com',
       databaseURL: 'https://bolaoafc2018.firebaseio.com',
       projectId: 'bolaoafc2018',
-      storageBucket: 'bolaoafc2018.appspot.com'
+      storageBucket: 'bolaoafc2018.appspot.com' */
      // yt-dev-meetup abaixo
-      /* apiKey: 'AIzaSyBfaK1Ve-8aVRCquVum_mivOS1_mkD30bw',
+      apiKey: 'AIzaSyBfaK1Ve-8aVRCquVum_mivOS1_mkD30bw',
       authDomain: 'yt-dev-meetup-6a846.firebaseapp.com',
       databaseURL: 'https://yt-dev-meetup-6a846.firebaseio.com',
       projectId: 'yt-dev-meetup-6a846',
-      storageBucket: 'yt-dev-meetup-6a846.appspot.com' */
+      storageBucket: 'yt-dev-meetup-6a846.appspot.com'
     })
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
